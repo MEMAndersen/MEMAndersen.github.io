@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Ab_S_ps3</title>
+  <meta name="keywords" content="Ab_S_ps3">
+  <meta name="description" content="Ab_S_ps: Von Mises yield condition for steel in 3d triaxial stress using">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- menu.html material -->
+<h1>Ab_S_ps3
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Ab_S_ps: Von Mises yield condition for steel in 3d triaxial stress using</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [Aseq, Aaeq, byeq] = Ab_S_ps3(fY) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Ab_S_ps: Von Mises yield condition for steel in 3d triaxial stress using
+ second-order cone programming. Gives the general coupling between 
+ stresses and cone parameters.
+  FORMAT: [Aseq, Aaeq, byeq] = Ab_VM_ps3(fY)
+ Input:
+  fY: Yield strength
+ Output:
+ [Aseq Aaeq] {x} = {byeq} 
+ {x}={st_xx st_yy st_zz st_xy st_xz st_yz alfa0 alfa1 alfa2 alfa3 alfa4 alfa5 alfa6}
+ Created 19-02-2018 Mads Emil Møller Andersen &amp; Nikolaj Skafte Koch</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../mema_fela/cmm3/setcon_cmm3.html" class="code" title="function [Ab,blc,buc,bs,bt,subi] = setcon_cmm3(nel,G,varargin)">setcon_cmm3</a>	rewriteL: Assembels the contraint matrix</li><li><a href="../../mema_fela/gen_functions/vonMiseYieldFunc.html" class="code" title="function [ps, lambda] = vonMiseYieldFunc(SS0,SS,fY,SF)">vonMiseYieldFunc</a>	vonMiseYieldFunc: Single material point of steel</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Aseq, Aaeq, byeq] = Ab_S_ps3(fY)</a>
+0002 <span class="comment">% Ab_S_ps: Von Mises yield condition for steel in 3d triaxial stress using</span>
+0003 <span class="comment">% second-order cone programming. Gives the general coupling between</span>
+0004 <span class="comment">% stresses and cone parameters.</span>
+0005 <span class="comment">%  FORMAT: [Aseq, Aaeq, byeq] = Ab_VM_ps3(fY)</span>
+0006 <span class="comment">% Input:</span>
+0007 <span class="comment">%  fY: Yield strength</span>
+0008 <span class="comment">% Output:</span>
+0009 <span class="comment">% [Aseq Aaeq] {x} = {byeq}</span>
+0010 <span class="comment">% {x}={st_xx st_yy st_zz st_xy st_xz st_yz alfa0 alfa1 alfa2 alfa3 alfa4 alfa5 alfa6}</span>
+0011 <span class="comment">% Created 19-02-2018 Mads Emil Møller Andersen &amp; Nikolaj Skafte Koch</span>
+0012 
+0013 Aseq = [ 0            0           0          0            0            0   
+0014         -1/sqrt(2)    1/sqrt(2)   0          0            0            0
+0015          0           -1/sqrt(2)   1/sqrt(2)  0            0            0
+0016          1/sqrt(2)    0          -1/sqrt(2)  0            0            0 
+0017          0            0           0         -sqrt(3)      0            0
+0018          0            0           0          0           -sqrt(3)      0
+0019          0            0           0          0            0           -sqrt(3)];
+0020 Aaeq = [1 0 0 0 0 0 0 
+0021         0 1 0 0 0 0 0
+0022         0 0 1 0 0 0 0
+0023         0 0 0 1 0 0 0
+0024         0 0 0 0 1 0 0
+0025         0 0 0 0 0 1 0
+0026         0 0 0 0 0 0 1];
+0027 byeq = [fY
+0028         0
+0029         0
+0030         0
+0031         0
+0032         0
+0033         0];</pre></div>
+<hr><address>Generated on Wed 31-Jul-2019 14:03:20 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

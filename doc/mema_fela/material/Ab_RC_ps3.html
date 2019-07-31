@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Ab_RC_ps3</title>
+  <meta name="keywords" content="Ab_RC_ps3">
+  <meta name="description" content="Ab_RC_ps: Mohr coulomb reinforced concrete yield condition in 3D using">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- menu.html material -->
+<h1>Ab_RC_ps3
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Ab_RC_ps: Mohr coulomb reinforced concrete yield condition in 3D using</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [A, bye, bse] = Ab_RC_ps3(fc,ft,k,Asx,fYx,Asy,fYy,Asz,fYz) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Ab_RC_ps: Mohr coulomb reinforced concrete yield condition in 3D using
+ semidefinte conic constraints. Gives the general coupling.
+  FORMAT: [A, bye, bse] = Ab_RC_ps3(fc,ft,k,Asx,fYx,Asy,fYy,Asz,fYz)
+ Input:
+  fc: Concrete compressive strength
+  ft: concrete tensile strength
+  k: Friction parameter
+  Asx, Asy, Asz: Reinforcement degree
+  fYx, fYy, fYz: Yield strength of reinforcement
+ Output:
+ [A] = The constaint matrix
+ {bye} = Limit of the linear constraints
+ {bse} = limit of the smeared reinforcement variabels
+
+ EQUATION
+ [A] {x} = {bye}
+ -{bse} &lt;= {ss_xx ss_yy ss_zz} &lt;= {bse}
+ {x}={st_xx st_yy st_zz st_xy st_xz st_yz ss_xx ss_yy ss_zz alfa0}
+ 10-04-2018 Mads Emil Møller Andersen &amp; Nikolaj Skafte Koch</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../mema_fela/cmm3/setcon_cmm3.html" class="code" title="function [Ab,blc,buc,bs,bt,subi] = setcon_cmm3(nel,G,varargin)">setcon_cmm3</a>	rewriteL: Assembels the contraint matrix</li><li><a href="../../mema_fela/gen_functions/MC3YieldFunc.html" class="code" title="function [ps, lambda] = MC3YieldFunc(SS0,SS,ft,fc,k,Asx,Asy,Asz,fYx,fYy,fYz,SF)">MC3YieldFunc</a>	MC3YieldFunc: Single material point of steel</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [A, bye, bse] = Ab_RC_ps3(fc,ft,k,Asx,fYx,Asy,fYy,Asz,fYz)</a>
+0002 <span class="comment">% Ab_RC_ps: Mohr coulomb reinforced concrete yield condition in 3D using</span>
+0003 <span class="comment">% semidefinte conic constraints. Gives the general coupling.</span>
+0004 <span class="comment">%  FORMAT: [A, bye, bse] = Ab_RC_ps3(fc,ft,k,Asx,fYx,Asy,fYy,Asz,fYz)</span>
+0005 <span class="comment">% Input:</span>
+0006 <span class="comment">%  fc: Concrete compressive strength</span>
+0007 <span class="comment">%  ft: concrete tensile strength</span>
+0008 <span class="comment">%  k: Friction parameter</span>
+0009 <span class="comment">%  Asx, Asy, Asz: Reinforcement degree</span>
+0010 <span class="comment">%  fYx, fYy, fYz: Yield strength of reinforcement</span>
+0011 <span class="comment">% Output:</span>
+0012 <span class="comment">% [A] = The constaint matrix</span>
+0013 <span class="comment">% {bye} = Limit of the linear constraints</span>
+0014 <span class="comment">% {bse} = limit of the smeared reinforcement variabels</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% EQUATION</span>
+0017 <span class="comment">% [A] {x} = {bye}</span>
+0018 <span class="comment">% -{bse} &lt;= {ss_xx ss_yy ss_zz} &lt;= {bse}</span>
+0019 <span class="comment">% {x}={st_xx st_yy st_zz st_xy st_xz st_yz ss_xx ss_yy ss_zz alfa0}</span>
+0020 <span class="comment">% 10-04-2018 Mads Emil Møller Andersen &amp; Nikolaj Skafte Koch</span>
+0021 
+0022 
+0023 <span class="comment">% Define F1 and F2:</span>
+0024 I = eye(3);
+0025 lower = [1 5 9 2 3 6]';
+0026 As = sparse([Asx 0   0
+0027              0   Asy 0
+0028              0   0   Asz
+0029              zeros(3)]);
+0030 
+0031 <span class="comment">% Linear constraints:</span>
+0032 <span class="comment">% F1 &gt;= 0, F1_ij + sigma_ij = d_ij*ft</span>
+0033 <span class="comment">% F2 &gt;= 0, F2_ij + sigma_ij - d_ij*alpha = 0</span>
+0034 <span class="comment">% F3 &gt;= 0, F3_ij - sigma_ij + d_ij*k*alpha = d_ij*fc</span>
+0035 A = sparse([  eye(6)  -As    zeros(6,1)
+0036               eye(6)  -As    -I(lower)
+0037              -eye(6)   As    k*I(lower)]);
+0038  
+0039 <span class="comment">% Limits for the linear constraints:</span>
+0040 bye =       [ ft*I(lower'),<span class="keyword">...</span>
+0041             zeros(1,6),<span class="keyword">...</span>
+0042             fc*I(lower')];
+0043         
+0044 <span class="comment">% Limits for the variables:</span>
+0045 bse = [fYx fYy fYz];</pre></div>
+<hr><address>Generated on Wed 31-Jul-2019 14:03:20 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

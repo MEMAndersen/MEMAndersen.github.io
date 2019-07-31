@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of drawUCS</title>
+  <meta name="keywords" content="drawUCS">
+  <meta name="description" content="Code by Henry Giddens on MATHWORKS">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- menu.html gen_functions -->
+<h1>drawUCS
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Code by Henry Giddens on MATHWORKS</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function drawUCS(hAx,scale) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Code by Henry Giddens on MATHWORKS
+ 09-04-2018 Modified by Mads Andersen</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../mema_fela/fela/fela_post.html" class="code" title="function fela_post(sol, prob, varargin)">fela_post</a>	fela_post: Post processing of solution, matlat plots or vtk files are</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function drawUCS(hAx,scale)</a>
+0002 <span class="comment">% Code by Henry Giddens on MATHWORKS</span>
+0003 <span class="comment">% 09-04-2018 Modified by Mads Andersen</span>
+0004 
+0005 
+0006 <span class="comment">%before this you have plotted a surface in axis hAx</span>
+0007 axis(hAx,<span class="string">'equal'</span>)
+0008 <span class="comment">%Get X, Y and Z data for plotting the axes...</span>
+0009 X_range = hAx.XLim(2) - hAx.XLim(1);
+0010 X_start = hAx.XLim(1);
+0011 X_delta = X_range/scale;
+0012 Y_delta = (hAx.YLim(2) - hAx.YLim(1))/scale;
+0013 Y_start = hAx.YLim(1);
+0014 Z_delta = (hAx.ZLim(2) - hAx.ZLim(1))/scale;
+0015 Z_start = hAx.ZLim(1);
+0016 X_Line = line(hAx,[X_start+X_delta X_start+X_delta*5],[Y_start+Y_delta Y_start+Y_delta],[Z_start+Z_delta Z_start+Z_delta]); <span class="comment">% x Line</span>
+0017 Y_Line = line(hAx,[X_start+X_delta X_start+X_delta],[Y_start+Y_delta Y_start+Y_delta*5],[Z_start+Z_delta Z_start+Z_delta]); <span class="comment">% Y Line</span>
+0018 Z_Line = line(hAx,[X_start+X_delta X_start+X_delta],[Y_start+Y_delta Y_start+Y_delta],[Z_start+Z_delta Z_start+Z_delta*5]); <span class="comment">%Z Line</span>
+0019 X_text = text(hAx,X_start+X_delta*6,Y_start+Y_delta,Z_start+Z_delta,<span class="string">'x'</span>);
+0020 Y_text = text(hAx,X_start+X_delta,Y_start+Y_delta*6,Z_start+Z_delta,<span class="string">'y'</span>);
+0021 Z_text = text(hAx,X_start+X_delta,Y_start+Y_delta,Z_start+Z_delta*6,<span class="string">'z'</span>);</pre></div>
+<hr><address>Generated on Wed 31-Jul-2019 14:03:20 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

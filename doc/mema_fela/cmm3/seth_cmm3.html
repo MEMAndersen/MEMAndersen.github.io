@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of seth_cmm3</title>
+  <meta name="keywords" content="seth_cmm3">
+  <meta name="description" content="seth_cmm: Assembles the global equilibrium matrix">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- menu.html cmm3 -->
+<h1>seth_cmm3
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>seth_cmm: Assembles the global equilibrium matrix</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function H=seth_cmm3(X,T,nel,neq,nvar,eqperel,varperel) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> seth_cmm: Assembles the global equilibrium matrix
+ prooperties of the mesh.
+  FORMAT: H=seth_cmm(X,T,nel,neq,nvar,eqperel,varperel)
+ Input:
+  X: Node coordinate matrix [x, y z]
+  T: Node toplogy matrix [n1, n2, n3, n4]
+  nel: Number of elements
+  neq: Number of equilibrium equations
+  nvar: Number of stress variabels
+  eqperel: Equations per element. Determines which variabels join
+  varperel: Variabels per element. Dimensions nel x 6
+ Output:
+  H: Global equilibrium matrix
+ 16-02-2018 Mads Emil Møller Andersen &amp; Nikolaj Skafte Koch</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="hplst_cmm3.html" class="code" title="function h=hplst_cmm3(X,T)">hplst_cmm3</a>	hplst_cmm3: compute h(equilibrium matrix) for a triaxial tetrahedron</li><li><a href="../../mema_fela/gen_functions/text_progress_bar.html" class="code" title="function text_progress_bar(c)">text_progress_bar</a>	This function creates a text progress bar. It should be called with a</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../mema_fela/fela/fela_main.html" class="code" title="function [sol, prob]= fela_main(msh_path, materials, supports, loads, varargin)">fela_main</a>	fela_main: Main runner of the FELA-program</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function H=seth_cmm3(X,T,nel,neq,nvar,eqperel,varperel)</a>
+0002 <span class="comment">% seth_cmm: Assembles the global equilibrium matrix</span>
+0003 <span class="comment">% prooperties of the mesh.</span>
+0004 <span class="comment">%  FORMAT: H=seth_cmm(X,T,nel,neq,nvar,eqperel,varperel)</span>
+0005 <span class="comment">% Input:</span>
+0006 <span class="comment">%  X: Node coordinate matrix [x, y z]</span>
+0007 <span class="comment">%  T: Node toplogy matrix [n1, n2, n3, n4]</span>
+0008 <span class="comment">%  nel: Number of elements</span>
+0009 <span class="comment">%  neq: Number of equilibrium equations</span>
+0010 <span class="comment">%  nvar: Number of stress variabels</span>
+0011 <span class="comment">%  eqperel: Equations per element. Determines which variabels join</span>
+0012 <span class="comment">%  varperel: Variabels per element. Dimensions nel x 6</span>
+0013 <span class="comment">% Output:</span>
+0014 <span class="comment">%  H: Global equilibrium matrix</span>
+0015 <span class="comment">% 16-02-2018 Mads Emil Møller Andersen &amp; Nikolaj Skafte Koch</span>
+0016 
+0017 <span class="comment">% Preallocates cellarray to store sparse definition</span>
+0018 nval = 6*12*nel;
+0019 Cellarray = cell(nval,1);
+0020 
+0021 <span class="comment">% Loop over elements and compute local h</span>
+0022 j = 1;
+0023 <a href="../../mema_fela/gen_functions/text_progress_bar.html" class="code" title="function text_progress_bar(c)">text_progress_bar</a>(sprintf(<span class="string">'%-20s'</span>, <span class="string">'seth'</span>));
+0024 <span class="keyword">for</span> el=1:nel
+0025     <span class="keyword">if</span> any(el == [1,nel]) || mod(el,ceil(nel/100)) == 0
+0026         <a href="../../mema_fela/gen_functions/text_progress_bar.html" class="code" title="function text_progress_bar(c)">text_progress_bar</a>(el/nel*100);
+0027     <span class="keyword">end</span>
+0028     h=<a href="hplst_cmm3.html" class="code" title="function h=hplst_cmm3(X,T)">hplst_cmm3</a>(X(T(el,:),:),T(el,:));
+0029     eqperelrep = repmat(eqperel(el,:),1,length(varperel(el,:)))';
+0030     varperelrep = repelem(varperel(el,:),length(eqperel(el,:)))';
+0031     <span class="keyword">for</span> i = 1:(length(varperel(el,:))*length(eqperel(el,:)))
+0032         Cellarray{j} = [eqperelrep(i) varperelrep(i) h(i)];
+0033         j = j+1;
+0034     <span class="keyword">end</span>
+0035 <span class="keyword">end</span>
+0036 <a href="../../mema_fela/gen_functions/text_progress_bar.html" class="code" title="function text_progress_bar(c)">text_progress_bar</a>(sprintf(<span class="string">'done in %8.2fs'</span>,toc));
+0037 <span class="comment">% Assemble global H</span>
+0038 IJV = cell2mat(Cellarray);
+0039 H = sparse(IJV(:,1),IJV(:,2),IJV(:,3),neq,nvar);</pre></div>
+<hr><address>Generated on Wed 31-Jul-2019 14:03:20 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

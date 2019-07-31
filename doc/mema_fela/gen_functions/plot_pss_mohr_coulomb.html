@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plot_pss_mohr_coulomb</title>
+  <meta name="keywords" content="plot_pss_mohr_coulomb">
+  <meta name="description" content="plot princple stresses in mohr coulomb">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- menu.html gen_functions -->
+<h1>plot_pss_mohr_coulomb
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>plot princple stresses in mohr coulomb</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function plot_pss_mohr_coulomb(fc,ft,As,fy,s) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> plot princple stresses in mohr coulomb</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="mohr_circle.html" class="code" title="function mohr_circle(s)">mohr_circle</a>	C1</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function plot_pss_mohr_coulomb(fc,ft,As,fy,s)</a>
+0002 <span class="comment">% plot princple stresses in mohr coulomb</span>
+0003 
+0004 <span class="comment">% Typical concrete paramters</span>
+0005 phi = 37*pi/180;
+0006 mu = tan(phi);
+0007 k = (sqrt(1+mu^2)+mu)^2;
+0008 c = fc/(2*sqrt(k));
+0009 
+0010 <span class="comment">% Sort the principal stresses</span>
+0011 s = sort(s,<span class="string">'descend'</span>);
+0012 
+0013 <span class="comment">% Take into account smeared reinforcement (OBS. only works for uniformly</span>
+0014 <span class="comment">% reinfoced.</span>
+0015 AsFy = As*fy;
+0016 
+0017 <span class="comment">% tension cutoff</span>
+0018 e_1 = [1; 0];
+0019 <span class="comment">% sliding failure surface</span>
+0020 <span class="comment">%v2 = [1; -mu]./sqrt(1^2+mu^2);</span>
+0021 <span class="comment">%v3 = [-v2(2); v2(1)];</span>
+0022 
+0023 p1 = [ft; -mu*ft+c] + e_1.*AsFy;
+0024 p2 = [0; c] + e_1.*AsFy;
+0025 x_lower = max(-1.1*fc, 1.1*s(3));
+0026 p3 = [x_lower;  -mu*x_lower+c] + e_1.*AsFy;
+0027 
+0028 dat = [p1, p2, p3];
+0029 
+0030 figure()
+0031 hold on
+0032 plot(dat(1,:),  dat(2,:), <span class="string">'b--'</span>)
+0033 plot(dat(1,:), -dat(2,:), <span class="string">'b--'</span>)
+0034 plot([dat(1,1), dat(1,1)], [dat(2,1), -dat(2,1)],<span class="string">'b--'</span>)
+0035 <a href="mohr_circle.html" class="code" title="function mohr_circle(s)">mohr_circle</a>(s)
+0036 
+0037 
+0038 <span class="comment">%xlim([xlower, 1.1*ft])</span>
+0039 axis(<span class="string">'equal'</span>)
+0040 ax = gca;
+0041 ax.XAxisLocation = <span class="string">'origin'</span>;
+0042 ax.YAxisLocation = <span class="string">'origin'</span>;
+0043 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 31-Jul-2019 14:03:20 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

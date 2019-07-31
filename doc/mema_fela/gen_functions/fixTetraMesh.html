@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fixTetraMesh</title>
+  <meta name="keywords" content="fixTetraMesh">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- menu.html gen_functions -->
+<h1>fixTetraMesh
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [T] = fixTetraMesh(X,T,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [T] = fixTetraMesh(X,T,varargin)</a>
+0002 
+0003 <span class="keyword">if</span> nargin&lt;3
+0004     tol = 1e-4;
+0005 <span class="keyword">else</span>
+0006     tol = varargin{1};
+0007 <span class="keyword">end</span>
+0008 
+0009 <span class="comment">% number of elements</span>
+0010 nel = size(T,1);
+0011 <span class="comment">% Elements to change</span>
+0012 indT = false(nel,1);
+0013 
+0014 <span class="comment">% loop over elements</span>
+0015 <span class="keyword">for</span> el = 1:nel
+0016     
+0017     v1 = X(T(el,2),:) - X(T(el,1),:);
+0018     v2 = X(T(el,3),:) - X(T(el,1),:);
+0019     v3 = X(T(el,4),:) - X(T(el,1),:);
+0020     
+0021     
+0022    <span class="comment">% Determine triple product</span>
+0023     norm12 = cross(v1,v2);
+0024     tripleProd = dot(norm12,v3);
+0025     <span class="keyword">if</span> tripleProd &gt; 0 <span class="comment">% Reverse order</span>
+0026         indT(el,:) = true;
+0027     <span class="keyword">elseif</span> tripleProd &lt; tol
+0028         error(<span class="string">'Coordinates are coplaner for element %d'</span>,el)
+0029     <span class="keyword">end</span>
+0030 <span class="keyword">end</span>
+0031 
+0032 T(indT,:) = T(indT,[4 2 3 1]);
+0033 
+0034</pre></div>
+<hr><address>Generated on Wed 31-Jul-2019 14:03:20 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

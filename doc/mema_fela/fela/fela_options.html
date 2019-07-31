@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fela_options</title>
+  <meta name="keywords" content="fela_options">
+  <meta name="description" content="options for main script">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- menu.html fela -->
+<h1>fela_options
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>options for main script</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function options = fela_options() </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> options for main script</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="fela_main.html" class="code" title="function [sol, prob]= fela_main(msh_path, materials, supports, loads, varargin)">fela_main</a>	fela_main: Main runner of the FELA-program</li><li><a href="fela_post.html" class="code" title="function fela_post(sol, prob, varargin)">fela_post</a>	fela_post: Post processing of solution, matlat plots or vtk files are</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function options = fela_options()</a>
+0002 
+0003 <span class="comment">% options for main script</span>
+0004 options.main.save_sol = true;
+0005 options.main.save_prob = true;
+0006 options.main.save_mesh = false;
+0007 options.savename = <span class="string">'problem.mat'</span>;
+0008 
+0009 <span class="comment">% Solver options are used in the solveopt function</span>
+0010 options.solver.save_file = false;
+0011 options.solver.save_name = <span class="string">'dump.task.gz'</span>;
+0012 options.solver.mosek_log = false;
+0013 options.solver.mosek_echo = 3; <span class="comment">%int 0-3 controls verbosity of mosek output</span>
+0014 options.solver.smeared_comp_factor = 1;
+0015 
+0016 <span class="comment">% Options for post processing</span>
+0017 options.post.create_vtk = true;
+0018 options.post.vtk_folder = <span class="string">'vtk'</span>;
+0019 options.post.vtk_fname = <span class="string">'output'</span>;
+0020 options.post.vtk_fname_pre = <span class="string">''</span>;
+0021 options.post.vtk_fname_suf = <span class="string">''</span>;
+0022 options.post.plot_collapse = false;
+0023 options.post.plot_collapse_scale = 1;
+0024 options.post.plot_principle = false;
+0025 options.post.plot_principle_scale = 1;
+0026</pre></div>
+<hr><address>Generated on Wed 31-Jul-2019 14:03:20 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
