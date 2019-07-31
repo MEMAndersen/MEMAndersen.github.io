@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of write_log</title>
+  <meta name="keywords" content="write_log">
+  <meta name="description" content="write_log: Logging in cmw and to file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- menu.html gen_functions -->
+<h1>write_log
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>write_log: Logging in cmw and to file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function write_log(data,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> write_log: Logging in cmw and to file
+  FORMAT: fela_init(msk_path,fela_path)
+ Input:
+  data: string: data to be written in log, can also be either 'open' which
+   generates a new log file, or 'close' which executes the current logging
+   session or one of the following which controls what is logged:
+   'cw_logging'        cmw logging toogle
+   'cw_logging_on'     cmw logging on
+   'cw_logging_off'    cmw logging off
+   'file_logging'      file logging toogle
+   'file_logging_on'   file logging on
+   'file_logging_off'  file logging off
+  varagin: the 'data' string supports string formatting like a usual
+   fpintf() or sprintf() function call
+
+ 29-07-2019 Mads Emil Møller Andersen - MEMAndersen@gmail.com
+ Losely adapted after code by Jan on the MATHWORKS forums</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../mema_fela/fela/fela_init.html" class="code" title="function fela_init(msk_path, varargin)">fela_init</a>	fela_init: Initialize mosek and set various settings related to logging</li><li><a href="../../mema_fela/fela/fela_main.html" class="code" title="function [sol, prob]= fela_main(msh_path, materials, supports, loads, varargin)">fela_main</a>	fela_main: Main runner of the FELA-program</li><li><a href="../../mema_fela/fela/fela_post.html" class="code" title="function fela_post(sol, prob, varargin)">fela_post</a>	fela_post: Post processing of solution, matlat plots or vtk files are</li><li><a href="abaqus2matlab.html" class="code" title="function [X, T, SET]=abaqus2matlab(file,varargin)">abaqus2matlab</a>	</li><li><a href="../../mema_fela/io/abaqus2matlab.html" class="code" title="function [X, T, SET]=abaqus2matlab(file,varargin)">abaqus2matlab</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function write_log(data,varargin)</a>
+0002 <span class="comment">% write_log: Logging in cmw and to file</span>
+0003 <span class="comment">%  FORMAT: fela_init(msk_path,fela_path)</span>
+0004 <span class="comment">% Input:</span>
+0005 <span class="comment">%  data: string: data to be written in log, can also be either 'open' which</span>
+0006 <span class="comment">%   generates a new log file, or 'close' which executes the current logging</span>
+0007 <span class="comment">%   session or one of the following which controls what is logged:</span>
+0008 <span class="comment">%   'cw_logging'        cmw logging toogle</span>
+0009 <span class="comment">%   'cw_logging_on'     cmw logging on</span>
+0010 <span class="comment">%   'cw_logging_off'    cmw logging off</span>
+0011 <span class="comment">%   'file_logging'      file logging toogle</span>
+0012 <span class="comment">%   'file_logging_on'   file logging on</span>
+0013 <span class="comment">%   'file_logging_off'  file logging off</span>
+0014 <span class="comment">%  varagin: the 'data' string supports string formatting like a usual</span>
+0015 <span class="comment">%   fpintf() or sprintf() function call</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% 29-07-2019 Mads Emil Møller Andersen - MEMAndersen@gmail.com</span>
+0018 <span class="comment">% Losely adapted after code by Jan on the MATHWORKS forums</span>
+0019 
+0020 <span class="comment">% File ID persistent</span>
+0021 <span class="keyword">persistent</span> FID
+0022 <span class="keyword">persistent</span> file_logging
+0023 <span class="keyword">persistent</span> cw_logging
+0024 
+0025 <span class="comment">% Open the logging file</span>
+0026 <span class="keyword">if</span> strcmp(data, <span class="string">'open'</span>)
+0027     log_name = strcat(<span class="string">'MATLAB_log_'</span>, datestr(now,<span class="string">'yyyy-mm-dd-HH-MM-SS'</span>),<span class="string">'.txt'</span>);
+0028     FID = fopen(fullfile(tempdir, log_name), <span class="string">'w'</span>);
+0029     <span class="keyword">if</span> FID &lt; 0
+0030         error(<span class="string">'Cannot open file'</span>);
+0031     <span class="keyword">end</span>
+0032     <span class="keyword">return</span>;
+0033     <span class="comment">% Close logging file</span>
+0034 <span class="keyword">elseif</span> strcmp(data, <span class="string">'close'</span>)
+0035     fclose(FID);
+0036     FID = -1;
+0037     <span class="keyword">return</span>
+0038 <span class="keyword">end</span>
+0039 
+0040 <span class="comment">% control logging to log file</span>
+0041 <span class="keyword">if</span> isempty(file_logging) || strcmp(data, <span class="string">'file_logging_on'</span>)
+0042     file_logging = true;
+0043     <span class="keyword">return</span>
+0044 <span class="keyword">elseif</span> strcmp(data, <span class="string">'file_logging_off'</span>)
+0045     file_logging = false;
+0046     <span class="keyword">return</span>
+0047 <span class="keyword">elseif</span> strcmp(data, <span class="string">'file_logging'</span>)
+0048     file_logging = ~file_logging;
+0049     <span class="keyword">return</span>
+0050 <span class="keyword">end</span>
+0051 
+0052 <span class="comment">% control logging to command window</span>
+0053 <span class="keyword">if</span> isempty(cw_logging) || strcmp(data, <span class="string">'cw_logging_on'</span>)
+0054     cw_logging = true;
+0055     <span class="keyword">return</span>
+0056 <span class="keyword">elseif</span> strcmp(data, <span class="string">'cw_logging_off'</span>)
+0057     cw_logging = false;
+0058     <span class="keyword">return</span>
+0059 <span class="keyword">elseif</span> strcmp(data, <span class="string">'cw_logging'</span>)
+0060     cw_logging = ~cw_logging;
+0061     <span class="keyword">return</span>
+0062 <span class="keyword">end</span>
+0063 
+0064 <span class="comment">% write to log</span>
+0065 <span class="keyword">if</span> file_logging
+0066     fprintf(FID, strcat(datestr(now,<span class="string">'yyyy-mm-dd-HH-MM-SS'</span>),<span class="string">': '</span>, data,<span class="string">'\n'</span>),varargin{:});
+0067 <span class="keyword">end</span>
+0068 <span class="comment">% Write to the screen at the same time:</span>
+0069 <span class="keyword">if</span> cw_logging
+0070     fprintf(strcat(data,<span class="string">'\n'</span>),varargin{:});
+0071 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 31-Jul-2019 14:03:20 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

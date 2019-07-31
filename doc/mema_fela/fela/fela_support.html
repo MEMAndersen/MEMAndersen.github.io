@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fela_support</title>
+  <meta name="keywords" content="fela_support">
+  <meta name="description" content="fela_support: Create supports matrix">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- menu.html fela -->
+<h1>fela_support
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>fela_support: Create supports matrix</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function S = fela_support(mesh, supports) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> fela_support: Create supports matrix
+  FORMAT: S = fela_support(mesh, supports)
+
+
+ Input:
+  mesh: struct: Struct containing the mesh
+
+  supports: struct: struct with the following build:
+   supports.(physical_name) = (int), where int is either 1=x, 2=y, 3=z
+
+
+ Output:
+  S: [n x 2] matrix: first column is node number, second column is support
+  direction. x=1, y=2 and z=3
+
+ Latest author:
+ 30-07-2019 Mads Emil Møller Andersen - MEMAndersen@gmail.com</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="fela_main.html" class="code" title="function [sol, prob]= fela_main(msh_path, materials, supports, loads, varargin)">fela_main</a>	fela_main: Main runner of the FELA-program</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function S = fela_support(mesh, supports)</a>
+0002 <span class="comment">% fela_support: Create supports matrix</span>
+0003 <span class="comment">%  FORMAT: S = fela_support(mesh, supports)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Input:</span>
+0007 <span class="comment">%  mesh: struct: Struct containing the mesh</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%  supports: struct: struct with the following build:</span>
+0010 <span class="comment">%   supports.(physical_name) = (int), where int is either 1=x, 2=y, 3=z</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Output:</span>
+0014 <span class="comment">%  S: [n x 2] matrix: first column is node number, second column is support</span>
+0015 <span class="comment">%  direction. x=1, y=2 and z=3</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Latest author:</span>
+0018 <span class="comment">% 30-07-2019 Mads Emil Møller Andersen - MEMAndersen@gmail.com</span>
+0019 
+0020 
+0021 support_physical_names = fieldnames(supports);
+0022 num_support_names = numel(support_physical_names);
+0023 num_supported_dofs = 0;
+0024 
+0025 temp_S = {};
+0026 
+0027 <span class="keyword">for</span> i = 1:num_support_names
+0028     physical_name = support_physical_names{i};
+0029     sup = mesh.(physical_name);
+0030     dir = supports.(physical_name);
+0031     temp_S{i} = [sup.node_numbers',ones(sup.nno,1)*dir];
+0032 <span class="keyword">end</span>
+0033 
+0034 S = vertcat(temp_S{:});</pre></div>
+<hr><address>Generated on Wed 31-Jul-2019 14:03:20 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

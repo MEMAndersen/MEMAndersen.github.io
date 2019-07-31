@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fela_load</title>
+  <meta name="keywords" content="fela_load">
+  <meta name="description" content="Preallocate temp_L">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- menu.html fela -->
+<h1>fela_load
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Preallocate temp_L</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function L = fela_load(mesh, X, loads) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Preallocate temp_L</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="fela_main.html" class="code" title="function [sol, prob]= fela_main(msh_path, materials, supports, loads, varargin)">fela_main</a>	fela_main: Main runner of the FELA-program</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function L = fela_load(mesh, X, loads)</a>
+0002 
+0003 <span class="comment">%Preallocate temp_L</span>
+0004 nno = mesh.nno;
+0005 temp_L = zeros(nno*3,1);
+0006 
+0007 <span class="comment">% Unpack some values for easier acces</span>
+0008 types_loads = fieldnames(loads);
+0009 num_types_loads = numel(types_loads);
+0010 
+0011 
+0012 <span class="comment">% Handle points loads if any defined:</span>
+0013 <span class="keyword">if</span> any(strcmpi(<span class="string">'point'</span>,types_loads))
+0014     <span class="comment">% not implemted</span>
+0015     warning(<span class="string">'Point loads not implemented'</span>)
+0016 <span class="keyword">end</span>
+0017 
+0018 <span class="comment">% Handle line loads if any defined:</span>
+0019 <span class="keyword">if</span> any(strcmpi(<span class="string">'line'</span>,types_loads))
+0020     <span class="comment">% not implemted</span>
+0021     warning(<span class="string">'Line loads not implemented'</span>)
+0022 <span class="keyword">end</span>
+0023 
+0024 <span class="comment">% Handle surface loads if any defined:</span>
+0025 <span class="keyword">if</span> any(strcmpi(<span class="string">'surface'</span>,types_loads))
+0026     surface_load_names = fieldnames(loads.surface);
+0027     num_surface_load_names = numel(surface_load_names);
+0028     
+0029     <span class="keyword">for</span> i = 1:num_surface_load_names
+0030         surf = mesh.(surface_load_names{i});
+0031         surf_name = surface_load_names{i};
+0032         p = loads.surface.(surf_name);
+0033         
+0034         <span class="comment">% Check for correct dimension</span>
+0035         <span class="keyword">if</span> surf.dim ~= 2
+0036             error(<span class="string">'Can only apply surface loads to surfaces (dim 2), dim was %s'</span>, surf.dim)
+0037         <span class="keyword">end</span>
+0038         
+0039         <span class="comment">% unpack values and loop over each element and apply load</span>
+0040         nel = mesh.(surf_name).nel;
+0041         elements = mesh.(surf_name).elements;
+0042         <span class="keyword">for</span> i = 1:nel
+0043             element = elements(i,:);
+0044             node1 = X(element(1),:);
+0045             node2 = X(element(2),:);
+0046             node3 = X(element(3),:);
+0047             
+0048             <span class="comment">% Determine the surface normal vector from node 1 to 2 (local x)</span>
+0049             v_x1 = (node2-node1)';
+0050             <span class="comment">% vector from 1 to 3</span>
+0051             v_13 = (node3-node1)';
+0052             
+0053             <span class="comment">% Area of triangle</span>
+0054             A = 1/2*norm(cross(v_x1,v_13));
+0055             
+0056             <span class="comment">% loop over each direction and compile</span>
+0057             <span class="keyword">for</span> dir = 1:3
+0058                 temp_L(element*3-(3-dir)) = temp_L(element*3-(3-dir)) + 1/3*A*p(dir);
+0059             <span class="keyword">end</span>
+0060         <span class="keyword">end</span>
+0061         
+0062     <span class="keyword">end</span>
+0063     
+0064     <span class="comment">% Handle volume loads if any defined:</span>
+0065     <span class="keyword">if</span> any(strcmpi(<span class="string">'volume'</span>,types_loads))
+0066         <span class="comment">% not implemted</span>
+0067         warning(<span class="string">'Volume loads not implemented'</span>)
+0068     <span class="keyword">end</span>
+0069     
+0070     <span class="comment">% Rewrite to program style</span>
+0071     <span class="comment">% Node numbers</span>
+0072     no = repelem(1:nno,1,3)';
+0073     <span class="comment">% Load direction</span>
+0074     dir = repmat(1:3,1,nno)';
+0075     
+0076     <span class="comment">% Load assembly</span>
+0077     ind = temp_L ~= 0;
+0078     L = [no(ind),dir(ind),temp_L(ind)];
+0079     
+0080 <span class="keyword">end</span>
+0081</pre></div>
+<hr><address>Generated on Wed 31-Jul-2019 14:03:20 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

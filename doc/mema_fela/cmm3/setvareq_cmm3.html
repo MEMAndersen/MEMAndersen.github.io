@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of setvareq_cmm3</title>
+  <meta name="keywords" content="setvareq_cmm3">
+  <meta name="description" content="setvareq_cmm: Sets variable equations and determines varous geometric">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- menu.html cmm3 -->
+<h1>setvareq_cmm3
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>setvareq_cmm: Sets variable equations and determines varous geometric</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [nno,nel,nvar,neq,varperel,eqperel,legno]=setvareq_cmm3(X,T) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> setvareq_cmm: Sets variable equations and determines varous geometric
+ prooperties of the mesh.
+  FORMAT: [nno,nel,nvar,neq,varperel,eqperel,legno] = setvareq_cmm3(X,T)
+ Input:
+  X: Node coordinate matrix [x, y, z]
+  T: Node toplogy matrix [n1, n2, n3, n4]
+ Output:
+  nno: Number of nodes
+  nel: Number of elements
+  nvar: Number of stress variabels
+  neq: Number of equilibrium equations
+  varperel: Variabels per element. Dimensions nel x 3
+  eqperel: Equations per element. Determines which variabels join
+  legno: Local element node per global node [global node, element, local node]
+ 16-02-2018 Mads Emil Møller Andersen &amp; Nikolaj Skafte Koch</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../mema_fela/gen_functions/text_progress_bar.html" class="code" title="function text_progress_bar(c)">text_progress_bar</a>	This function creates a text progress bar. It should be called with a</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../mema_fela/fela/fela_main.html" class="code" title="function [sol, prob]= fela_main(msh_path, materials, supports, loads, varargin)">fela_main</a>	fela_main: Main runner of the FELA-program</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [nno,nel,nvar,neq,varperel,eqperel,legno]=setvareq_cmm3(X,T)</a>
+0002 <span class="comment">% setvareq_cmm: Sets variable equations and determines varous geometric</span>
+0003 <span class="comment">% prooperties of the mesh.</span>
+0004 <span class="comment">%  FORMAT: [nno,nel,nvar,neq,varperel,eqperel,legno] = setvareq_cmm3(X,T)</span>
+0005 <span class="comment">% Input:</span>
+0006 <span class="comment">%  X: Node coordinate matrix [x, y, z]</span>
+0007 <span class="comment">%  T: Node toplogy matrix [n1, n2, n3, n4]</span>
+0008 <span class="comment">% Output:</span>
+0009 <span class="comment">%  nno: Number of nodes</span>
+0010 <span class="comment">%  nel: Number of elements</span>
+0011 <span class="comment">%  nvar: Number of stress variabels</span>
+0012 <span class="comment">%  neq: Number of equilibrium equations</span>
+0013 <span class="comment">%  varperel: Variabels per element. Dimensions nel x 3</span>
+0014 <span class="comment">%  eqperel: Equations per element. Determines which variabels join</span>
+0015 <span class="comment">%  legno: Local element node per global node [global node, element, local node]</span>
+0016 <span class="comment">% 16-02-2018 Mads Emil Møller Andersen &amp; Nikolaj Skafte Koch</span>
+0017 
+0018 nno=size(X,1);
+0019 nel=size(T,1);
+0020 
+0021 <span class="comment">% set up varperel - 6 variables per element (stress components)</span>
+0022 nvar=6*nel;
+0023 varperel=reshape(1:nvar,6,nel)';
+0024 
+0025 <span class="comment">% set up Local element node per global node</span>
+0026 legno = zeros(nel*4,3);
+0027 <span class="comment">% Initialize index number</span>
+0028 num = 1;
+0029 <span class="comment">% Loop over nodes</span>
+0030 elVec = [1:nel 1:nel 1:nel 1:nel];
+0031 localNodeVec = 1:4;
+0032 <a href="../../mema_fela/gen_functions/text_progress_bar.html" class="code" title="function text_progress_bar(c)">text_progress_bar</a>(sprintf(<span class="string">'%-20s'</span>, <span class="string">'setvareq_legno'</span>));
+0033 <span class="keyword">for</span> no = 1:nno
+0034     <span class="keyword">if</span> any(no == [1,nno]) || mod(no,ceil(nno/100)) == 0
+0035         <a href="../../mema_fela/gen_functions/text_progress_bar.html" class="code" title="function text_progress_bar(c)">text_progress_bar</a>(no/nno*100);
+0036     <span class="keyword">end</span>
+0037     <span class="comment">% Find elements and local nodes for global node</span>
+0038     Ind = T == no;
+0039     r = elVec(Ind(:));
+0040     <span class="comment">% Write to legno</span>
+0041     <span class="keyword">for</span> i = 1:length(r)
+0042         legno(num,:) = [no, r(i), localNodeVec(Ind(r(i),:))];
+0043         num = num+1;
+0044     <span class="keyword">end</span>     
+0045 <span class="keyword">end</span>
+0046 <a href="../../mema_fela/gen_functions/text_progress_bar.html" class="code" title="function text_progress_bar(c)">text_progress_bar</a>(sprintf(<span class="string">'done in %8.2fs'</span>,toc));
+0047 
+0048 <span class="comment">% setup equations per element (3 equation per node)</span>
+0049 eqperel=zeros(nel,12);
+0050 <span class="comment">% Per node</span>
+0051 lenlegno = size(legno,1);
+0052 <a href="../../mema_fela/gen_functions/text_progress_bar.html" class="code" title="function text_progress_bar(c)">text_progress_bar</a>(sprintf(<span class="string">'%-20s'</span>, <span class="string">'setvareq_eqperel'</span>));
+0053 <span class="keyword">for</span> i = 1:lenlegno
+0054     <span class="keyword">if</span> any(i == [1,lenlegno]) || mod(i,ceil(lenlegno/100)) == 0
+0055         <a href="../../mema_fela/gen_functions/text_progress_bar.html" class="code" title="function text_progress_bar(c)">text_progress_bar</a>(i/lenlegno*100);
+0056     <span class="keyword">end</span>
+0057     eqperel(legno(i,2),legno(i,3)*3)   = legno(i,1)*3;
+0058     eqperel(legno(i,2),legno(i,3)*3-1) = legno(i,1)*3-1;
+0059     eqperel(legno(i,2),legno(i,3)*3-2) = legno(i,1)*3-2;
+0060 <span class="keyword">end</span>
+0061 <a href="../../mema_fela/gen_functions/text_progress_bar.html" class="code" title="function text_progress_bar(c)">text_progress_bar</a>(sprintf(<span class="string">'done in %8.2fs'</span>,toc));
+0062 neq = nno*3; <span class="comment">%max(max(eqperel));</span>
+0063</pre></div>
+<hr><address>Generated on Wed 31-Jul-2019 14:03:20 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
