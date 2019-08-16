@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of vonMiseYieldFunc</title>
+  <meta name="keywords" content="vonMiseYieldFunc">
+  <meta name="description" content="vonMiseYieldFunc: Single material point of steel">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- menu.html gen_functions -->
+<h1>vonMiseYieldFunc
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>vonMiseYieldFunc: Single material point of steel</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ps, lambda] = vonMiseYieldFunc(SS0,SS,fY,SF) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> vonMiseYieldFunc: Single material point of steel
+  FORMAT: [ps, lambda] = VMPanelYieldFunc(SS0,SS,fY,t)
+ Input:
+  SS0: Constant stress part
+  SS: Variable stress part, scaled by lambda
+  fY: Steel yield strength
+  SF: Stress factor
+ Output:
+  ps: Principle stresses
+  lambda: Load scale
+ Created 19-02-2018 Mads Emil Møller Andersen &amp; Nikolaj Skafte Koch</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../mema_fela/material/Ab_S_ps3.html" class="code" title="function [Aseq, Aaeq, byeq] = Ab_S_ps3(fY)">Ab_S_ps3</a>	Ab_S_ps: Von Mises yield condition for steel in 3d triaxial stress using</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ps, lambda] = vonMiseYieldFunc(SS0,SS,fY,SF)</a>
+0002 <span class="comment">% vonMiseYieldFunc: Single material point of steel</span>
+0003 <span class="comment">%  FORMAT: [ps, lambda] = VMPanelYieldFunc(SS0,SS,fY,t)</span>
+0004 <span class="comment">% Input:</span>
+0005 <span class="comment">%  SS0: Constant stress part</span>
+0006 <span class="comment">%  SS: Variable stress part, scaled by lambda</span>
+0007 <span class="comment">%  fY: Steel yield strength</span>
+0008 <span class="comment">%  SF: Stress factor</span>
+0009 <span class="comment">% Output:</span>
+0010 <span class="comment">%  ps: Principle stresses</span>
+0011 <span class="comment">%  lambda: Load scale</span>
+0012 <span class="comment">% Created 19-02-2018 Mads Emil Møller Andersen &amp; Nikolaj Skafte Koch</span>
+0013 
+0014 S = zeros(3); S0 = zeros(3);
+0015 lower = [1 5 9 2 3 6]';
+0016 S(lower) = SS;
+0017 S = S + tril(S,-1)';
+0018 S0(lower) = SS0;
+0019 S0 = S0 + tril(S0,-1)';
+0020 
+0021 <span class="comment">% get A</span>
+0022 [Aseq, Aaeq, byeq] = <a href="../../mema_fela/material/Ab_S_ps3.html" class="code" title="function [Aseq, Aaeq, byeq] = Ab_S_ps3(fY)">Ab_S_ps3</a>(fY);
+0023 prob.a = [SS        eye(6) zeros(6,7);
+0024           zeros(7,1) Aseq   Aaeq];
+0025 
+0026 <span class="comment">% Limits for the equations:</span>
+0027 prob.blc = [SS0;
+0028             byeq];
+0029 prob.buc = [SS0;
+0030             byeq];
+0031 
+0032 <span class="comment">% Limits for the variables:</span>
+0033 prob.blx = [0,  -SF*fY*ones(1,6) -inf(1,7)]';
+0034 prob.bux = [inf, SF*fY*ones(1,6)  inf(1,7)]';
+0035 
+0036 <span class="comment">% Object function:</span>
+0037 prob.c = [1, zeros(1,13)];
+0038 
+0039 <span class="comment">% Cones</span>
+0040 [~, res] = mosekopt(<span class="string">'symbcon'</span>);
+0041 prob.cones.type = res.symbcon.MSK_CT_QUAD;
+0042 prob.cones.sub = 8:14;
+0043 prob.cones.subptr = 1;
+0044     
+0045 <span class="comment">% Optimization:</span>
+0046 [r,res] = mosekopt(<span class="string">'maximize echo(0)'</span>,prob);
+0047 
+0048 lambda = res.sol.itr.xx(1);
+0049 sY = S*lambda + S0;
+0050 ps = sort(eig(sY),<span class="string">'descend'</span>);</pre></div>
+<hr><address>Generated on Fri 16-Aug-2019 14:33:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

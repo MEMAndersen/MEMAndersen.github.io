@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fela_support</title>
+  <meta name="keywords" content="fela_support">
+  <meta name="description" content="fela_support: Create supports matrix">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- menu.html fela -->
+<h1>fela_support
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>fela_support: Create supports matrix</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function S = fela_support(mesh, supports) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> fela_support: Create supports matrix
+  FORMAT: S = fela_support(mesh, supports)
+
+
+ Input:
+  mesh: struct: Struct containing the mesh
+
+  supports: struct: struct with the following build:
+   supports.(physical_name) = (int), where int is either 1=x, 2=y, 3=z
+   OR
+   supports.(physical_name) = [bool bool bool], where bool is eiter true
+   or false for supports in the x-, y- or z-direction
+
+
+ Output:
+  S: [n x 2] matrix: first column is node number, second column is support
+  direction. x=1, y=2 and z=3
+
+ Latest author:
+ 30-07-2019 Mads Emil Møller Andersen - MEMAndersen@gmail.com</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="fela_main.html" class="code" title="function [sol, prob]= fela_main(msh_path, materials, supports, loads, varargin)">fela_main</a>	fela_main: Main runner of the FELA-program</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function S = fela_support(mesh, supports)</a>
+0002 <span class="comment">% fela_support: Create supports matrix</span>
+0003 <span class="comment">%  FORMAT: S = fela_support(mesh, supports)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Input:</span>
+0007 <span class="comment">%  mesh: struct: Struct containing the mesh</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%  supports: struct: struct with the following build:</span>
+0010 <span class="comment">%   supports.(physical_name) = (int), where int is either 1=x, 2=y, 3=z</span>
+0011 <span class="comment">%   OR</span>
+0012 <span class="comment">%   supports.(physical_name) = [bool bool bool], where bool is eiter true</span>
+0013 <span class="comment">%   or false for supports in the x-, y- or z-direction</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Output:</span>
+0017 <span class="comment">%  S: [n x 2] matrix: first column is node number, second column is support</span>
+0018 <span class="comment">%  direction. x=1, y=2 and z=3</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Latest author:</span>
+0021 <span class="comment">% 30-07-2019 Mads Emil Møller Andersen - MEMAndersen@gmail.com</span>
+0022 
+0023 
+0024 support_physical_names = fieldnames(supports);
+0025 num_support_names = numel(support_physical_names);
+0026 num_supported_dofs = 0;
+0027 
+0028 temp_S = {};
+0029 
+0030 k = 1; <span class="comment">%counter</span>
+0031 <span class="keyword">for</span> i = 1:num_support_names
+0032     physical_name = support_physical_names{i};
+0033     sup = mesh.(physical_name);
+0034     dir = supports.(physical_name);
+0035     
+0036     <span class="keyword">if</span> length(dir) == 1
+0037         temp_S{k} = [sup.node_numbers',ones(sup.nno,1)*dir]; 
+0038         k = k+1;
+0039     <span class="keyword">elseif</span> length(dir) == 3
+0040         <span class="keyword">for</span> j = 1:3
+0041             <span class="keyword">if</span> dir(j) == true
+0042                 temp_S{k} = [sup.node_numbers',ones(sup.nno,1)*j];
+0043                 k = k+1;
+0044             <span class="keyword">end</span>
+0045         <span class="keyword">end</span>
+0046     <span class="keyword">else</span>
+0047         error([<span class="string">'supports.(physical_name) needs to be either a scalar '</span> <span class="keyword">...</span>
+0048             <span class="string">'coresponding to x=1, y=2 or z=3 or a vector of length 3 '</span> <span class="keyword">...</span>
+0049             <span class="string">'with true and false values'</span>])
+0050     <span class="keyword">end</span>
+0051 <span class="keyword">end</span>
+0052 
+0053 S = vertcat(temp_S{:});</pre></div>
+<hr><address>Generated on Fri 16-Aug-2019 14:33:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of b2r</title>
+  <meta name="keywords" content="b2r">
+  <meta name="description" content="BLUEWHITERED   Blue, white, and red color map.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- # packages_external --><!-- menu.html b2r -->
+<h1>b2r
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>BLUEWHITERED   Blue, white, and red color map.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function newmap = b2r(cmin_input,cmax_input) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">BLUEWHITERED   Blue, white, and red color map.
+   this matlab file is designed to draw anomaly figures. the color of
+   the colorbar is from blue to white and then to red, corresponding to 
+   the anomaly values from negative to zero to positive, respectively. 
+   The color white always correspondes to value zero. 
+   
+   You should input two values like caxis in matlab, that is the min and
+   the max value of color values designed.  e.g. colormap(b2r(-3,5))
+   
+   the brightness of blue and red will change according to your setting,
+   so that the brightness of the color corresponded to the color of his
+   opposite number
+   e.g. colormap(b2r(-3,6))   is from light blue to deep red
+   e.g. colormap(b2r(-3,3))   is from deep blue to deep red
+
+   I'd advise you to use colorbar first to make sure the caxis' cmax and cmin.
+   Besides, there is also another similar colorbar named 'darkb2r', in which the 
+   color is darker.
+
+   by Cunjie Zhang, 2011-3-14
+   find bugs ====&gt; email : daisy19880411@126.com
+   updated:  Robert Beckman help to fix the bug when start point is zero, 2015-04-08
+   
+   Examples:
+   ------------------------------
+   figure
+   peaks;
+   colormap(b2r(-6,8)), colorbar, title('b2r')</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newmap = b2r(cmin_input,cmax_input)</a>
+0002 <span class="comment">%BLUEWHITERED   Blue, white, and red color map.</span>
+0003 <span class="comment">%   this matlab file is designed to draw anomaly figures. the color of</span>
+0004 <span class="comment">%   the colorbar is from blue to white and then to red, corresponding to</span>
+0005 <span class="comment">%   the anomaly values from negative to zero to positive, respectively.</span>
+0006 <span class="comment">%   The color white always correspondes to value zero.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   You should input two values like caxis in matlab, that is the min and</span>
+0009 <span class="comment">%   the max value of color values designed.  e.g. colormap(b2r(-3,5))</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   the brightness of blue and red will change according to your setting,</span>
+0012 <span class="comment">%   so that the brightness of the color corresponded to the color of his</span>
+0013 <span class="comment">%   opposite number</span>
+0014 <span class="comment">%   e.g. colormap(b2r(-3,6))   is from light blue to deep red</span>
+0015 <span class="comment">%   e.g. colormap(b2r(-3,3))   is from deep blue to deep red</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   I'd advise you to use colorbar first to make sure the caxis' cmax and cmin.</span>
+0018 <span class="comment">%   Besides, there is also another similar colorbar named 'darkb2r', in which the</span>
+0019 <span class="comment">%   color is darker.</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%   by Cunjie Zhang, 2011-3-14</span>
+0022 <span class="comment">%   find bugs ====&gt; email : daisy19880411@126.com</span>
+0023 <span class="comment">%   updated:  Robert Beckman help to fix the bug when start point is zero, 2015-04-08</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">%   Examples:</span>
+0026 <span class="comment">%   ------------------------------</span>
+0027 <span class="comment">%   figure</span>
+0028 <span class="comment">%   peaks;</span>
+0029 <span class="comment">%   colormap(b2r(-6,8)), colorbar, title('b2r')</span>
+0030 <span class="comment">%</span>
+0031 
+0032 
+0033 <span class="comment">%% check the input</span>
+0034 <span class="keyword">if</span> nargin ~= 2 ;
+0035    disp(<span class="string">'input error'</span>);
+0036    disp(<span class="string">'input two variables, the range of caxis , for example : colormap(b2r(-3,3))'</span>);
+0037 <span class="keyword">end</span>
+0038 
+0039 <span class="keyword">if</span> cmin_input &gt;= cmax_input
+0040     disp(<span class="string">'input error'</span>);
+0041     disp(<span class="string">'the color range must be from a smaller one to a larger one'</span>);
+0042 <span class="keyword">end</span>
+0043 
+0044 <span class="comment">%% control the figure caxis</span>
+0045 lims = get(gca, <span class="string">'CLim'</span>);   <span class="comment">% get figure caxis formation</span>
+0046 caxis([cmin_input cmax_input]);
+0047 
+0048 <span class="comment">%% color configuration : from blue to to white then to red</span>
+0049 
+0050 red_top     = [1 0 0];
+0051 white_middle= [1 1 1];
+0052 blue_bottom = [0 0 1];
+0053 
+0054 <span class="comment">%% color interpolation</span>
+0055 
+0056 color_num = 251;   
+0057 color_input = [blue_bottom;  white_middle;  red_top];
+0058 oldsteps = linspace(-1, 1, size(color_input,1));
+0059 newsteps = linspace(-1, 1, color_num);  
+0060 
+0061 <span class="comment">%% Category Discussion according to the cmin and cmax input</span>
+0062 
+0063 <span class="comment">%  the color data will be remaped to color range from -max(abs(cmin_input),cmax_input)</span>
+0064 <span class="comment">%  to max(abs(cmin_input),cmax_input) , and then squeeze the color data</span>
+0065 <span class="comment">%  in order to make sure the blue and red color selected corresponded</span>
+0066 <span class="comment">%  to their math values</span>
+0067 
+0068 <span class="comment">%  for example :</span>
+0069 <span class="comment">%  if b2r(-3,6) ,the color range is from light blue to deep red , so that</span>
+0070 <span class="comment">%  the light blue valued at -3 correspondes to light red valued at 3</span>
+0071 
+0072 
+0073 <span class="comment">%% Category Discussion according to the cmin and cmax input</span>
+0074 <span class="comment">% first : from negative to positive</span>
+0075 <span class="comment">% then  : from positive to positive</span>
+0076 <span class="comment">% last  : from negative to negative</span>
+0077 
+0078 <span class="keyword">for</span> j=1:3
+0079    newmap_all(:,j) = min(max(transpose(interp1(oldsteps, color_input(:,j), newsteps)), 0), 1);
+0080 <span class="keyword">end</span>
+0081 
+0082 <span class="keyword">if</span> (cmin_input &lt; 0)  &amp;&amp;  (cmax_input &gt; 0) ;  
+0083     
+0084     
+0085     <span class="keyword">if</span> abs(cmin_input) &lt; cmax_input 
+0086          
+0087         <span class="comment">% |--------|---------|--------------------|</span>
+0088       <span class="comment">% -cmax      cmin       0                  cmax         [cmin,cmax]</span>
+0089  
+0090        start_point = max(round((cmin_input+cmax_input)/2/cmax_input*color_num),1);
+0091        newmap = squeeze(newmap_all(start_point:color_num,:));
+0092        
+0093     <span class="keyword">elseif</span> abs(cmin_input) &gt;= cmax_input
+0094         
+0095          <span class="comment">% |------------------|------|--------------|</span>
+0096        <span class="comment">%  cmin                0     cmax          -cmin         [cmin,cmax]</span>
+0097        
+0098        end_point = max(round((cmax_input-cmin_input)/2/abs(cmin_input)*color_num),1);
+0099        newmap = squeeze(newmap_all(1:end_point,:));
+0100     <span class="keyword">end</span>
+0101     
+0102        
+0103 <span class="keyword">elseif</span> cmin_input &gt;= 0
+0104 
+0105        <span class="keyword">if</span> lims(1) &lt; 0 
+0106            disp(<span class="string">'caution:'</span>)
+0107            disp(<span class="string">'there are still values smaller than 0, but cmin is larger than 0.'</span>)
+0108            disp(<span class="string">'some area will be in red color while it should be in blue color'</span>)
+0109        <span class="keyword">end</span>
+0110        
+0111         <span class="comment">% |-----------------|-------|-------------|</span>
+0112       <span class="comment">% -cmax               0      cmin          cmax         [cmin,cmax]</span>
+0113  
+0114        start_point = max(round((cmin_input+cmax_input)/2/cmax_input*color_num),1);
+0115        newmap = squeeze(newmap_all(start_point:color_num,:));
+0116 
+0117 <span class="keyword">elseif</span> cmax_input &lt;= 0
+0118 
+0119        <span class="keyword">if</span> lims(2) &gt; 0 
+0120            disp(<span class="string">'caution:'</span>)
+0121            disp(<span class="string">'there are still values larger than 0, but cmax is smaller than 0.'</span>)
+0122            disp(<span class="string">'some area will be in blue color while it should be in red color'</span>)
+0123        <span class="keyword">end</span>
+0124        
+0125          <span class="comment">% |------------|------|--------------------|</span>
+0126        <span class="comment">%  cmin         cmax    0                  -cmin         [cmin,cmax]</span>
+0127 
+0128        end_point = max(round((cmax_input-cmin_input)/2/abs(cmin_input)*color_num),1);
+0129        newmap = squeeze(newmap_all(1:end_point,:));
+0130 <span class="keyword">end</span>
+0131     
+0132 
+0133</pre></div>
+<hr><address>Generated on Fri 16-Aug-2019 14:33:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

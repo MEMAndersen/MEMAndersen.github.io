@@ -1,0 +1,186 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Tutorial_2_Advanced</title>
+  <meta name="keywords" content="Tutorial_2_Advanced">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- # packages_external --><!-- menu.html dist_fig -->
+<h1>Tutorial_2_Advanced
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 clc;
+0002 clear;
+0003 close all;
+0004 
+0005 <span class="comment">% =========================================================================</span>
+0006 <span class="comment">% ===== Descriptions ======================================================</span>
+0007 <span class="comment">% =========================================================================</span>
+0008 
+0009 Description = {<span class="keyword">...</span>
+0010     <span class="string">'This is a tutorial on how to use some of the more advanced features of distFig. Hit enter in the workspace to continue to the next step and generate five figures.'</span>
+0011     
+0012     <span class="string">'Suppose you want to distribute the figures to the western part of the screen in two rows and two columns. Do so by executing:'</span>
+0013     <span class="string">'You can now only see figure #5 in the top left corner, which has been placed on top of figure #1. This is because the function restarts the pattern, when it runs out of space. The extra figure (#5) can be ignored by executing (We use the eastern part now):'</span>
+0014     <span class="string">'Note that you didn''t use the ''Only'' command, but instead you ignored the restart of the pattern. However, this can also be reproduced by executing either of the following, which do the same thing:'</span>
+0015     
+0016     <span class="string">'Suppose you want to distribute a figure so it spans the middle two rows in a four row pattern. This cannot be done by the standard features, but can be done with the ''Adjust'' command. This feature moves the whole pattern by a specified ammount. Move all figure to the north-western part by executing:'</span>
+0017     <span class="string">'Now, move the whole pattern by 100 pixels to the right and 200 pixels down by executing:'</span>
+0018     <span class="string">'Instead of moving them a specific number of pixels, you can use the same command with scalars from 0 to 1, which are realtive sizes of the selected monitor size. Move the whole pattern half a screen down by executing:'</span>
+0019     <span class="string">'The function detect automatically whether the input are integers or scalars. Now - returning to the case where one figure was supposed to span the middle two rows of a four row pattern. This can thus be done by executing:'</span>
+0020     <span class="string">'And let us position figure #2 and #3 on top and below figure #1 by executing the following two commands:'</span>
+0021     <span class="string">'Note how the ''Offset'' feature was used to position figure #3 by skipping the two rows, where figure #1 was placed.'</span>
+0022     
+0023     <span class="string">'distFig also features some minor function which are useful when positioning many figures (for instance 50). In such a case, it can be hard to see the actual figures due to the menu bar and the surrounding whitespace. The menu bars can be remove by executing:'</span>
+0024     <span class="string">'The whitespace can also be removed by making a tight fit around the figure. Do so by executing:'</span>
+0025     
+0026     <span class="string">'Now there is a lot more figure and a lot less crap. :)'</span>
+0027     
+0028     <span class="string">'The last feature of distFig is if you use Simulink. The figures from a Simulink model can be distributed by themself, along with the normal figures or completely ignored by executing one of the following:'</span>
+0029     <span class="string">'(The above functions were not executed now) - try them out afterwards to see how our five figures are not distributed when executing the first one, where only Simulink figures are distributed.'</span>
+0030     
+0031     <span class="string">'Try and play around with the function by executing some of the used commands below:'</span>
+0032     <span class="string">'To see a description of the various features execute:'</span>
+0033     <span class="string">'Please contact me, if you find any bugs/errors on AndersSSimonsen@GMail.com or write a comment on File Exchange. :)'</span>
+0034     };
+0035 
+0036 <span class="comment">% =========================================================================</span>
+0037 <span class="comment">% ===== Commands ==========================================================</span>
+0038 <span class="comment">% =========================================================================</span>
+0039 
+0040 Command = {<span class="keyword">...</span>
+0041     {<span class="string">''</span>}
+0042     {<span class="string">'distFig(''Pos'',''W'',''Rows'',2,''Cols'',2'')'</span>}
+0043     {<span class="string">'distFig(''Pos'',''E'',''Rows'',2,''Cols'',2'',''Extra'',''Ignore'')'</span>}
+0044     {<span class="string">'distFig(''Pos'',''E'',''Rows'',2,''Cols'',2'',''Not'',5)'</span>,<span class="string">'!distFig(''Pos'',''E'',''Rows'',2,''Cols'',2'',''Only'',[1,2,3,4])'</span>}
+0045     
+0046     {<span class="string">'distFig(''Pos'',''NW'')'</span>}
+0047     {<span class="string">'distFig(''Pos'',''NW'',''Adjust'',[100,-200])'</span>}
+0048     {<span class="string">'distFig(''Pos'',''NW'',''Adjust'',[0,-0.5])'</span>}
+0049     {<span class="string">'distFig(''Pos'',''E'',''Adjust'',[0,-0.25],''Only'',1,''Rows'',2)'</span>}
+0050     {<span class="string">'distFig(''Pos'',''E'',''Only'',2,''Rows'',4)'</span>,<span class="string">'distFig(''Pos'',''E'',''Only'',3,''Rows'',4,''Offset'',3)'</span>}
+0051     {<span class="string">''</span>}
+0052     
+0053     {<span class="string">'distFig(''Pos'',''W'',''Menu'',''none'')'</span>}
+0054     {<span class="string">'distFig(''Pos'',''W'',''Tight'',true)'</span>}
+0055     {<span class="string">''</span>}
+0056     
+0057     {<span class="string">'!distFig(''Pos'',''W'',''Simulink'',''only'')'</span>,<span class="string">'!distFig(''Pos'',''W'',''Simulink'',''include'')'</span>,<span class="string">'!distFig(''Pos'',''W'',''Simulink'',''ignore'')'</span>}
+0058     {<span class="string">''</span>}
+0059     
+0060     {<span class="string">'&gt;&gt;&gt;ALL&lt;&lt;&lt;'</span>}
+0061     {<span class="string">'!help distFig'</span>}
+0062     {<span class="string">''</span>}
+0063     };
+0064 
+0065 Trigger_All = numel(Command) - 2;
+0066 n = 0;
+0067 <span class="keyword">for</span> i = 1:(Trigger_All - 1)
+0068     <span class="keyword">for</span> j = 1:numel(Command{i})
+0069         n = n + 1;
+0070         Command{Trigger_All}{n} = Command{i}{j};
+0071     <span class="keyword">end</span>
+0072 <span class="keyword">end</span>
+0073 
+0074 <span class="comment">% =========================================================================</span>
+0075 <span class="comment">% ===== Steps =============================================================</span>
+0076 <span class="comment">% =========================================================================</span>
+0077 
+0078 <span class="comment">% ===== TextWidth =========================================================</span>
+0079 TextWidth = 60;
+0080 
+0081 <span class="keyword">for</span> i = 1:numel(Description)
+0082     <span class="comment">% ===== Description ===================================================</span>
+0083     fprintf(<span class="string">'===== Step %02.0f/%02.0f %s\n'</span>,i,numel(Description),repmat(<span class="string">'='</span>,1,TextWidth - 17));
+0084     Str = <span class="string">''</span>;
+0085     <span class="keyword">while</span> (1)
+0086         <span class="keyword">if</span> (numel(Description{i}) &gt;= TextWidth)
+0087             NewLine = regexp(Description{i}(1:TextWidth),<span class="string">'[ .]'</span>);
+0088             Str = strcat(Str,Description{i}(1:NewLine(end)),<span class="string">'\n'</span>);
+0089             Description{i}(1:NewLine(end) - 0) = [];
+0090         <span class="keyword">else</span>
+0091             Str = strcat(Str,Description{i},<span class="string">'\n'</span>);
+0092             <span class="keyword">break</span>;
+0093         <span class="keyword">end</span>
+0094     <span class="keyword">end</span>
+0095     fprintf(Str);
+0096     
+0097     <span class="comment">% ===== Command =======================================================</span>
+0098     <span class="keyword">if</span> ~((isempty(Command{i}{1})) &amp;&amp; (numel(Command{i}) == 1))
+0099         <span class="keyword">for</span> j = 1:numel(Command{i})
+0100             <span class="keyword">if</span> (numel(Command{i}{j}) ~= 0)
+0101                 <span class="keyword">if</span> (~strcmp(Command{i}{j}(1),<span class="string">'!'</span>))
+0102                     disp(sprintf(<span class="string">'&lt;a href=&quot;matlab:%s;&quot;&gt;%s&lt;/a&gt;'</span>,Command{i}{j},Command{i}{j})); <span class="comment">%#ok&lt;DSPS&gt;</span>
+0103                 <span class="keyword">else</span>
+0104                     disp(sprintf(<span class="string">'&lt;a href=&quot;matlab:%s;&quot;&gt;%s&lt;/a&gt;'</span>,Command{i}{j}(2:end),Command{i}{j}(2:end))); <span class="comment">%#ok&lt;DSPS&gt;</span>
+0105                 <span class="keyword">end</span>
+0106             <span class="keyword">end</span>
+0107         <span class="keyword">end</span>
+0108     <span class="keyword">end</span>
+0109     
+0110     <span class="comment">% ===== Continue ======================================================</span>
+0111     input(<span class="string">''</span>);
+0112     
+0113     <span class="comment">% ===== Execute =======================================================</span>
+0114     <span class="keyword">if</span> (~((isempty(Command{i}{1})) &amp;&amp; (numel(Command{i}) == 1)) &amp;&amp; (i ~= Trigger_All))
+0115         <span class="keyword">for</span> j = 1:numel(Command{i})
+0116             <span class="keyword">if</span> (numel(Command{i}{j}) ~= 0)
+0117                 <span class="keyword">if</span> (~strcmp(Command{i}{j}(1),<span class="string">'!'</span>))
+0118                     eval(sprintf(Command{i}{j}));
+0119                 <span class="keyword">end</span>
+0120             <span class="keyword">end</span>
+0121         <span class="keyword">end</span>
+0122     <span class="keyword">end</span>
+0123     
+0124     <span class="comment">% ===== Generate figures ==============================================</span>
+0125     <span class="keyword">if</span> (i == 1)
+0126         <span class="keyword">for</span> j = 1:5
+0127             figure(<span class="string">'Color'</span>,<span class="string">'w'</span>);
+0128             hold on;
+0129             plot(linspace(-1,1,100),sin(linspace(-1,1,100) * pi * j) * 0.25 + 0.75,<span class="string">'-'</span>,<span class="string">'LineWidth'</span>,2);
+0130             plot(linspace(-1,1,100),-sin(linspace(-1,1,100) * pi * j) * 0.25 - 0.75,<span class="string">'-'</span>,<span class="string">'LineWidth'</span>,2);
+0131             text(0,0,num2str(j),<span class="string">'HorizontalAlignment'</span>,<span class="string">'Center'</span>,<span class="string">'FontSize'</span>,100,<span class="string">'Color'</span>,[0.9,0.9,1] * 0.25,<span class="string">'BackGroundColor'</span>,<span class="string">'w'</span>);
+0132             hold off;
+0133             box on;
+0134             xlim([-1,1]);
+0135             ylim([-1,1]);
+0136             xlabel(<span class="string">'XLabel'</span>);
+0137             ylabel(<span class="string">'YLabel'</span>);
+0138         <span class="keyword">end</span>
+0139     <span class="keyword">end</span>
+0140 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 16-Aug-2019 14:33:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fela_init</title>
+  <meta name="keywords" content="fela_init">
+  <meta name="description" content="fela_init: Initialize mosek and set various settings related to logging">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- menu.html fela -->
+<h1>fela_init
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>fela_init: Initialize mosek and set various settings related to logging</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function fela_init(msk_path, varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> fela_init: Initialize mosek and set various settings related to logging
+ and plotting
+  FORMAT: fela_init(msk_path,fela_path)
+
+
+ Input:
+  msk_path: string: Path to mosek installation
+
+  fela_path: string: Path to the mema_fela library of function
+
+
+ Optional input (in order)
+
+  'log_settings': cell array: strings which control logging, see
+  documentation of write_log.
+
+ 29-07-2019 Mads Emil Møller Andersen - MEMAndersen@gmail.com</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../mema_fela/gen_functions/text_progress_bar.html" class="code" title="function text_progress_bar(c)">text_progress_bar</a>	This function creates a text progress bar. It should be called with a</li><li><a href="../../mema_fela/gen_functions/write_log.html" class="code" title="function write_log(data,varargin)">write_log</a>	write_log: Logging in cmw and to file</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function res = error_check_log_options(str)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function fela_init(msk_path, varargin)</a>
+0002 <span class="comment">% fela_init: Initialize mosek and set various settings related to logging</span>
+0003 <span class="comment">% and plotting</span>
+0004 <span class="comment">%  FORMAT: fela_init(msk_path,fela_path)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Input:</span>
+0008 <span class="comment">%  msk_path: string: Path to mosek installation</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%  fela_path: string: Path to the mema_fela library of function</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Optional input (in order)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%  'log_settings': cell array: strings which control logging, see</span>
+0016 <span class="comment">%  documentation of write_log.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% 29-07-2019 Mads Emil Møller Andersen - MEMAndersen@gmail.com</span>
+0019 
+0020 <span class="comment">% parse input</span>
+0021 input = inputParser;
+0022 input.FunctionName = <span class="string">'fela_init'</span>;
+0023 
+0024 valid_path = @(x) isfolder(x);
+0025 valid_cell = @(x) iscell(x);
+0026 
+0027 addRequired(input, <span class="string">'msk_path'</span>, valid_path)
+0028 addOptional(input, <span class="string">'log_settings'</span>, {}, valid_cell)
+0029 parse(input, msk_path, varargin{:})
+0030 
+0031 <span class="comment">% add folders to path</span>
+0032 addpath(genpath(input.Results.msk_path))
+0033 
+0034 <span class="comment">% initialze logging and apply settings, error checks values</span>
+0035 <a href="../../mema_fela/gen_functions/write_log.html" class="code" title="function write_log(data,varargin)">write_log</a>(<span class="string">'open'</span>)
+0036 
+0037 <span class="keyword">for</span> log_setting = input.Results.log_settings
+0038     <span class="keyword">if</span> <a href="#_sub1" class="code" title="subfunction res = error_check_log_options(str)">error_check_log_options</a>(log_setting{:})
+0039         <a href="../../mema_fela/gen_functions/write_log.html" class="code" title="function write_log(data,varargin)">write_log</a>(log_setting{:});
+0040         <span class="keyword">if</span> ~isempty(log_setting) &amp;&amp; strcmpi(log_setting{:}(1:2), <span class="string">'cw'</span>)
+0041             <a href="../../mema_fela/gen_functions/text_progress_bar.html" class="code" title="function text_progress_bar(c)">text_progress_bar</a>(log_setting);
+0042         <span class="keyword">end</span>
+0043     <span class="keyword">end</span>
+0044 <span class="keyword">end</span>
+0045 
+0046 <span class="comment">% test if mosek is available and print version to log</span>
+0047 <span class="keyword">try</span> 
+0048     <a href="../../mema_fela/gen_functions/write_log.html" class="code" title="function write_log(data,varargin)">write_log</a>(<span class="string">'Testing availability of Mosek:'</span>)
+0049     [~, res] = mosekopt(<span class="string">'version echo(0)'</span>);
+0050     <a href="../../mema_fela/gen_functions/write_log.html" class="code" title="function write_log(data,varargin)">write_log</a>(<span class="string">'Found MOSEK version : major(%d), minor(%d), revision(%d)'</span>, <span class="keyword">...</span>
+0051     [res.version.major, res.version.minor, res.version.revision])
+0052 <span class="keyword">catch</span>
+0053     error(<span class="string">'Mosek Installation not found'</span>)
+0054 <span class="keyword">end</span> 
+0055 
+0056 <span class="comment">% latex interpreter</span>
+0057 set(groot,<span class="string">'defaulttextinterpreter'</span>,<span class="string">'latex'</span>);
+0058 set(groot, <span class="string">'defaultAxesTickLabelInterpreter'</span>,<span class="string">'latex'</span>);
+0059 set(groot, <span class="string">'defaultLegendInterpreter'</span>,<span class="string">'latex'</span>);
+0060 
+0061 <span class="keyword">end</span>
+0062 
+0063 <a name="_sub1" href="#_subfunctions" class="code">function res = error_check_log_options(str)</a>
+0064 
+0065 valid_inputs = {<span class="string">'cw_logging'</span>, <span class="string">'cw_logging_on'</span>, <span class="string">'cw_logging_off'</span>, <span class="keyword">...</span>
+0066     <span class="string">'file_logging'</span>, <span class="string">'file_logging_on'</span>, <span class="string">'file_logging_off'</span>};
+0067 
+0068 <span class="keyword">if</span> any(strcmp(str, valid_inputs))
+0069     res = true;
+0070     <span class="keyword">return</span>
+0071 <span class="keyword">else</span>
+0072     warning(<span class="string">'Wrong input for log options: %s. Input ignored'</span>, str)
+0073     res = false;
+0074 <span class="keyword">end</span>
+0075 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 16-Aug-2019 14:33:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

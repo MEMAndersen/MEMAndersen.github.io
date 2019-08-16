@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of setsup_cmm3</title>
+  <meta name="keywords" content="setsup_cmm3">
+  <meta name="description" content="setsup_cmm: Excludes the supported dofs from the eq. matrix">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- menu.html cmm3 -->
+<h1>setsup_cmm3
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>setsup_cmm: Excludes the supported dofs from the eq. matrix</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [supeq, H]=setsup_cmm3(S,H) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> setsup_cmm: Excludes the supported dofs from the eq. matrix
+  FORMAT: [supeq, H]=setsup_cmm(S,H)
+ Input:
+  S: Support matrix S(i,:)=[node dir]
+  H: Global equilibrium matrix
+ Output:
+  supeq: Vector containing supported eqation numbers
+  H: Global equilibrium matrix excluding supports
+ 16-02-2018 Mads Emil Møller Andersen &amp; Nikolaj Skafte Koch</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../mema_fela/fela/fela_main.html" class="code" title="function [sol, prob]= fela_main(msh_path, materials, supports, loads, varargin)">fela_main</a>	fela_main: Main runner of the FELA-program</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [supeq, H]=setsup_cmm3(S,H)</a>
+0002 <span class="comment">% setsup_cmm: Excludes the supported dofs from the eq. matrix</span>
+0003 <span class="comment">%  FORMAT: [supeq, H]=setsup_cmm(S,H)</span>
+0004 <span class="comment">% Input:</span>
+0005 <span class="comment">%  S: Support matrix S(i,:)=[node dir]</span>
+0006 <span class="comment">%  H: Global equilibrium matrix</span>
+0007 <span class="comment">% Output:</span>
+0008 <span class="comment">%  supeq: Vector containing supported eqation numbers</span>
+0009 <span class="comment">%  H: Global equilibrium matrix excluding supports</span>
+0010 <span class="comment">% 16-02-2018 Mads Emil Møller Andersen &amp; Nikolaj Skafte Koch</span>
+0011 
+0012 <span class="comment">% Initialize support vector</span>
+0013 supeq=sparse(size(S,1),1);
+0014 
+0015 <span class="comment">% Determine support equations</span>
+0016 <span class="keyword">for</span> i=1:size(S,1)
+0017     <span class="keyword">if</span> S(i,2) == 1
+0018         supeq(i) = S(i,1)*3-2;
+0019     <span class="keyword">elseif</span> S(i,2) == 2
+0020         supeq(i) = S(i,1)*3-1;
+0021     <span class="keyword">elseif</span> S(i,2) == 3
+0022         supeq(i) = S(i,1)*3;
+0023     <span class="keyword">else</span>
+0024         error(<span class="string">'Only dof {1,2,3} is valid in the support definition'</span>)
+0025     <span class="keyword">end</span>
+0026 <span class="keyword">end</span>
+0027 
+0028 <span class="comment">% Remove supported dof from equilibrium matrix</span>
+0029 H(supeq,:)=[];</pre></div>
+<hr><address>Generated on Fri 16-Aug-2019 14:33:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

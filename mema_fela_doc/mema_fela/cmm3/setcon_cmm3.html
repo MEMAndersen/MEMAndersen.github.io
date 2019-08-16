@@ -1,0 +1,452 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of setcon_cmm3</title>
+  <meta name="keywords" content="setcon_cmm3">
+  <meta name="description" content="setcon_cmm3: Assembels the contraint matrix">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- menu.html cmm3 -->
+<h1>setcon_cmm3
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>setcon_cmm3: Assembels the contraint matrix</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [Ab,blc,buc,bs,bt,subi] = setcon_cmm3(nel,G,options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> setcon_cmm3: Assembels the contraint matrix
+  FORMAT: [Ab,blc,buc,bs,bt,subi] = setcon_cmm3(nel,G,varargin)
+
+
+ Input:
+  nel: Number of elements
+  G: struct: material struct used in program
+   Concrete (reinforced)
+
+    G.type{i} = 'RC' OR 'RC2';
+    G.mat{i} =  [fc ft k Ax fYx Ay fYy Az fYz];
+    G.A(:,i) = [G.mat{i}(4) G.mat{i}(6) G.mat{i}(8)];
+
+   Steel
+    G.type{i} = 'S';
+    G.mat{i} = fY;
+
+   (Modified) Mohr-coulomb - Concrete
+    G.type{i} = 'MC' OR 'MMC' OR 'C2';
+    G.mat{i} =  [fc ft k];
+
+  options: struct: Struct containing values for optional parameters
+
+
+ Output:
+  Ab: Constrint matrix
+  blc: Lower yield criteria
+  buc: Upper yield criteria
+  bs: Variable limits of steel
+  bt: Variable limits of total stresses
+  subi: subindexes for the equations of semidefinte conic constraints 
+
+ Latest author:
+ 30-07-2019 Mads Emil Møller Andersen - MEMAndersen@gmail.com</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../mema_fela/gen_functions/text_progress_bar.html" class="code" title="function text_progress_bar(c)">text_progress_bar</a>	This function creates a text progress bar. It should be called with a</li><li><a href="../../mema_fela/material/Ab_MMC_ps3.html" class="code" title="function [A, blc, buc] = Ab_MMC_ps3(k, fc, ft)">Ab_MMC_ps3</a>	Ab_MMC_ps3: Modified Mohr-Coulomb material point on 3D. Uses two</li><li><a href="../../mema_fela/material/Ab_RC2_ps3.html" class="code" title="function [A, blc, buc, bse] = Ab_RC2_ps3(k,fc,ft,Asx,fYx,Asy,fYy,Asz,fYz)">Ab_RC2_ps3</a>	Ab_RC2_ps3: Mohr coulomb reinforced concrete yield condition in 3D using</li><li><a href="../../mema_fela/material/Ab_RC_ps3.html" class="code" title="function [A, bye, bse] = Ab_RC_ps3(k,fc,ft,Asx,fYx,Asy,fYy,Asz,fYz)">Ab_RC_ps3</a>	Ab_RC_ps3: Mohr coulomb reinforced concrete yield condition in 3D using</li><li><a href="../../mema_fela/material/Ab_S_ps3.html" class="code" title="function [Aseq, Aaeq, byeq] = Ab_S_ps3(fY)">Ab_S_ps3</a>	Ab_S_ps: Von Mises yield condition for steel in 3d triaxial stress using</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../mema_fela/fela/fela_main.html" class="code" title="function [sol, prob]= fela_main(msh_path, materials, supports, loads, varargin)">fela_main</a>	fela_main: Main runner of the FELA-program</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Ab,blc,buc,bs,bt,subi] = setcon_cmm3(nel,G,options)</a>
+0002 <span class="comment">% setcon_cmm3: Assembels the contraint matrix</span>
+0003 <span class="comment">%  FORMAT: [Ab,blc,buc,bs,bt,subi] = setcon_cmm3(nel,G,varargin)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Input:</span>
+0007 <span class="comment">%  nel: Number of elements</span>
+0008 <span class="comment">%  G: struct: material struct used in program</span>
+0009 <span class="comment">%   Concrete (reinforced)</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%    G.type{i} = 'RC' OR 'RC2';</span>
+0012 <span class="comment">%    G.mat{i} =  [fc ft k Ax fYx Ay fYy Az fYz];</span>
+0013 <span class="comment">%    G.A(:,i) = [G.mat{i}(4) G.mat{i}(6) G.mat{i}(8)];</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Steel</span>
+0016 <span class="comment">%    G.type{i} = 'S';</span>
+0017 <span class="comment">%    G.mat{i} = fY;</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   (Modified) Mohr-coulomb - Concrete</span>
+0020 <span class="comment">%    G.type{i} = 'MC' OR 'MMC' OR 'C2';</span>
+0021 <span class="comment">%    G.mat{i} =  [fc ft k];</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%  options: struct: Struct containing values for optional parameters</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% Output:</span>
+0027 <span class="comment">%  Ab: Constrint matrix</span>
+0028 <span class="comment">%  blc: Lower yield criteria</span>
+0029 <span class="comment">%  buc: Upper yield criteria</span>
+0030 <span class="comment">%  bs: Variable limits of steel</span>
+0031 <span class="comment">%  bt: Variable limits of total stresses</span>
+0032 <span class="comment">%  subi: subindexes for the equations of semidefinte conic constraints</span>
+0033 <span class="comment">%</span>
+0034 <span class="comment">% Latest author:</span>
+0035 <span class="comment">% 30-07-2019 Mads Emil Møller Andersen - MEMAndersen@gmail.com</span>
+0036 
+0037 <span class="comment">% Unpacking optional parameters</span>
+0038 stressFac = options.setcon.fy_cap;
+0039 
+0040 <span class="comment">% Count members of each material</span>
+0041 n.RC = sum(ismember(cellstr(G.type),<span class="string">'RC'</span>));
+0042 n.S = sum(ismember(cellstr(G.type),<span class="string">'S'</span>));
+0043 n.MC = sum(ismember(cellstr(G.type),<span class="string">'MC'</span>));
+0044 n.RC2 = sum(ismember(cellstr(G.type),<span class="string">'RC2'</span>));
+0045 
+0046 <span class="comment">% Number of auxillirary parameters</span>
+0047 
+0048 <span class="comment">% Number of extra parameters (stress and aux)</span>
+0049 naM.RC = 4;
+0050 naM.S = 7;
+0051 naM.MC = 2;
+0052 naM.RC2 = 5;
+0053 
+0054 <span class="comment">% Total number of coupling equations</span>
+0055 nrM.RC = 18;
+0056 nrM.S = 7;
+0057 nrM.MC = 14;
+0058 nrM.RC2 = 14;
+0059 
+0060 <span class="comment">% Number of eqn used for semidefinite vars</span>
+0061 nr_subi_M.RC = 18;
+0062 nr_subi_M.S = -1; <span class="comment">%(-1 used to not increment counter for steel)</span>
+0063 nr_subi_M.MC = 12;
+0064 nr_subi_M.RC2 = 12;
+0065 
+0066 <span class="comment">% Preallocations for sparse indexing</span>
+0067 aval = nrM.RC*naM.RC*n.RC + nrM.S*naM.S*n.S + nrM.MC*naM.MC*n.MC <span class="keyword">...</span>
+0068     + nrM.RC2*naM.RC2*n.RC2;
+0069 bval = nrM.RC*n.RC + nrM.S*n.S + nrM.MC*n.MC + nrM.RC2*n.RC2;
+0070 a_array = cell(aval,1);
+0071 a_index = 1;
+0072 
+0073 blc = zeros(bval,1);
+0074 buc = zeros(bval,1);
+0075 
+0076 <span class="comment">% Limits for smeared steel</span>
+0077 bs = zeros(1,3*n.RC+3*n.RC2);
+0078 <span class="comment">% Limits for total stress vars</span>
+0079 bt = zeros(1,6*(n.RC+n.S+n.MC+n.RC2));
+0080 
+0081 subi = zeros(1,18*n.RC+12*(n.MC+n.RC2));
+0082 subi_index = 0;
+0083 
+0084 <span class="comment">%% Row incremental counters (equations)</span>
+0085 r1 = 0;
+0086 r2 = r1;
+0087 
+0088 <span class="comment">%% Column incremental counters (Auxiliary parameters)</span>
+0089 c_t1 = 0; <span class="comment">% Total stresses</span>
+0090 c_t2 = c_t1;
+0091 c_lam = nel*6+1; <span class="comment">% (lambda)</span>
+0092 c_s1 = c_lam;  <span class="comment">% Reinforcement stresses</span>
+0093 c_s2 = c_s1;
+0094 c_alpha_RC = c_s1+3*(n.RC+n.RC2); <span class="comment">% aux. vars. RC</span>
+0095 c_alpha_S_1 = c_alpha_RC+n.RC; <span class="comment">% aux. vars. S</span>
+0096 c_alpha_S_2 = c_alpha_S_1;
+0097 c_alpha_MC_1 = c_alpha_S_1+7*n.S;
+0098 c_alpha_MC_2 = c_alpha_MC_1;
+0099 c_alpha_RC2_1 = c_alpha_MC_1+2*n.MC;
+0100 c_alpha_RC2_2 = c_alpha_RC2_1;
+0101 i_bs1 = 0; <span class="comment">% Steel limits</span>
+0102 i_bs2 = i_bs1;
+0103 
+0104 <span class="comment">%% Progessbar init</span>
+0105 <a href="../../mema_fela/gen_functions/text_progress_bar.html" class="code" title="function text_progress_bar(c)">text_progress_bar</a>(sprintf(<span class="string">'%-20s'</span>, <span class="string">'setcon'</span>));
+0106 
+0107 <span class="comment">%% Main loop over elements</span>
+0108 <span class="keyword">for</span> el = 1:nel
+0109     <span class="comment">%progressbar update</span>
+0110     <span class="keyword">if</span> any(el == [1,nel]) || mod(el,ceil(el/100)) == 0
+0111         <a href="../../mema_fela/gen_functions/text_progress_bar.html" class="code" title="function text_progress_bar(c)">text_progress_bar</a>(el/nel*100);
+0112     <span class="keyword">end</span>
+0113     
+0114     <span class="comment">% Reinforced concrete init</span>
+0115     <span class="keyword">if</span> strcmp(G.type{el},<span class="string">'RC'</span>)
+0116         <span class="comment">% Material parameters</span>
+0117         k = G.mat{el}(1); fc = G.mat{el}(2); ft = G.mat{el}(3);
+0118         Asx = G.mat{el}(4); fYx = G.mat{el}(5);
+0119         Asy = G.mat{el}(6); fYy = G.mat{el}(7);
+0120         Asz = G.mat{el}(8); fYz = G.mat{el}(9);
+0121         [A, bye, bs_e] = <a href="../../mema_fela/material/Ab_RC_ps3.html" class="code" title="function [A, bye, bse] = Ab_RC_ps3(k,fc,ft,Asx,fYx,Asy,fYy,Asz,fYz)">Ab_RC_ps3</a>(k,fc,ft,Asx,fYx,Asy,fYy,Asz,fYz);
+0122         
+0123         <span class="comment">% Concrete stress part</span>
+0124         Asig = A(:,1:6);
+0125         <span class="comment">% Steel and Aux part</span>
+0126         Ast = A(:,7:9);
+0127         Aa = A(:,10);
+0128         <span class="comment">% Number of equations per element</span>
+0129         nr = nrM.RC;
+0130         nr_subi = nr_subi_M.RC;
+0131         
+0132     <span class="comment">% Steel init</span>
+0133     <span class="keyword">elseif</span> strcmp(G.type{el},<span class="string">'S'</span>)
+0134         <span class="comment">% Material parameters</span>
+0135         fY = G.mat{el}(1);
+0136         [Aseq, Aaeq, byeq] = <a href="../../mema_fela/material/Ab_S_ps3.html" class="code" title="function [Aseq, Aaeq, byeq] = Ab_S_ps3(fY)">Ab_S_ps3</a>(fY);
+0137         
+0138         <span class="comment">% Number of equations per element</span>
+0139         nr = nrM.S;
+0140         nr_subi = nr_subi_M.S;
+0141     
+0142     <span class="comment">% MC init</span>
+0143     <span class="keyword">elseif</span> strcmp(G.type{el},<span class="string">'MC'</span>)
+0144         <span class="comment">% Material parameters</span>
+0145         k = G.mat{el}(1); fc = G.mat{el}(2); ft = G.mat{el}(3);
+0146         [A, blc_e, buc_e] = <a href="../../mema_fela/material/Ab_MMC_ps3.html" class="code" title="function [A, blc, buc] = Ab_MMC_ps3(k, fc, ft)">Ab_MMC_ps3</a>(k, fc, ft);
+0147         
+0148         <span class="comment">% Concrete stress part</span>
+0149         Asig = A(:,1:6);
+0150         <span class="comment">% Aux part</span>
+0151         Aa = A(:,7:8);
+0152         <span class="comment">% Number of equations per element</span>
+0153         nr = nrM.MC;
+0154         nr_subi = nr_subi_M.MC;
+0155     <span class="comment">%RC2 init</span>
+0156     <span class="keyword">elseif</span> strcmp(G.type{el},<span class="string">'RC2'</span>)
+0157         <span class="comment">% Material parameters</span>
+0158         k = G.mat{el}(1); fc = G.mat{el}(2); ft = G.mat{el}(3);
+0159         Asx = G.mat{el}(4); fYx = G.mat{el}(5);
+0160         Asy = G.mat{el}(6); fYy = G.mat{el}(7);
+0161         Asz = G.mat{el}(8); fYz = G.mat{el}(9);
+0162         [A, blc_e, buc_e, bs_e] = <a href="../../mema_fela/material/Ab_RC2_ps3.html" class="code" title="function [A, blc, buc, bse] = Ab_RC2_ps3(k,fc,ft,Asx,fYx,Asy,fYy,Asz,fYz)">Ab_RC2_ps3</a>(k,fc,ft,Asx,fYx,Asy,fYy,Asz,fYz);
+0163         
+0164         <span class="comment">% Concrete stress part</span>
+0165         Asig = A(:,1:6);
+0166         <span class="comment">% Steel and Aux part</span>
+0167         Ast = A(:,7:9);
+0168         Aa = A(:,10:11);
+0169         <span class="comment">% Number of equations per element</span>
+0170         nr = nrM.RC2;
+0171         <span class="comment">% Number of subi equations</span>
+0172         nr_subi = nr_subi_M.RC2;
+0173     <span class="keyword">end</span>
+0174     
+0175     <span class="comment">% ROW for element (equations)</span>
+0176     r1 = r2 + 1;
+0177     r2 = r1+nr-1;
+0178     r = r1:r2;
+0179     
+0180     <span class="comment">% row for subi;</span>
+0181     r_subi = r1:r1+nr_subi-1;
+0182     
+0183     <span class="comment">% col for total stress part</span>
+0184     c_t1 = c_t2+1;
+0185     c_t2 = c_t1+5;
+0186     
+0187     <span class="comment">% Reinforced concrete</span>
+0188     <span class="keyword">if</span> strcmp(G.type{el},<span class="string">'RC'</span>)
+0189         <span class="comment">% Subindex for semidefinate cones</span>
+0190         subi(subi_index+1:subi_index+nr_subi) = r_subi;
+0191         subi_index = subi_index + nr_subi;
+0192         
+0193         <span class="comment">% Total stress part</span>
+0194         c = c_t1:c_t2;
+0195         <span class="comment">% Create</span>
+0196         r_rep = repmat(r,1,length(c))';
+0197         c_rep = repelem(c,length(r))';
+0198         Ab_rep=[Asig];
+0199         <span class="keyword">for</span> i = 1:(length(c)*length(r))
+0200             a_array{a_index} = [r_rep(i) c_rep(i) Ab_rep(i)];
+0201             a_index = a_index+1;
+0202         <span class="keyword">end</span>
+0203         
+0204         <span class="comment">% Stress limits for total stress</span>
+0205         bt(c) = inf;
+0206         
+0207         <span class="comment">% steel part</span>
+0208         c_s1 = c_s2+1;
+0209         c_s2 = c_s1+2;
+0210         c = c_s1:c_s2;
+0211         <span class="comment">% create steel</span>
+0212         r_rep = repmat(r,1,length(c))';
+0213         c_rep = repelem(c,length(r))';
+0214         Ab_rep=[Ast];
+0215         <span class="keyword">for</span> i = 1:(length(c)*length(r))
+0216             a_array{a_index} = [r_rep(i) c_rep(i) Ab_rep(i)];
+0217             a_index = a_index+1;
+0218         <span class="keyword">end</span>
+0219         
+0220         <span class="comment">% alpha part</span>
+0221         c_alpha_RC = c_alpha_RC + 1;
+0222         c=c_alpha_RC;
+0223         <span class="comment">% create alpha</span>
+0224         r_rep = repmat(r,1,length(c))';
+0225         c_rep = repelem(c,length(r))';
+0226         Ab_rep=[Aa];
+0227         <span class="keyword">for</span> i = 1:(length(c)*length(r))
+0228             a_array{a_index} = [r_rep(i) c_rep(i) Ab_rep(i)];
+0229             a_index = a_index+1;
+0230         <span class="keyword">end</span>
+0231         
+0232         <span class="comment">% b part</span>
+0233         blc(r) = [-inf];
+0234         buc(r) = [ bye];
+0235         
+0236         <span class="comment">% steel limits</span>
+0237         i_bs1 = i_bs2 + 1;
+0238         i_bs2 = i_bs1 + 2;
+0239         bs(i_bs1:i_bs2) = bs_e;
+0240         
+0241         <span class="comment">% Steel</span>
+0242     <span class="keyword">elseif</span> strcmp(G.type{el},<span class="string">'S'</span>)
+0243         <span class="comment">% Total stress part</span>
+0244         c = c_t1:c_t2;
+0245         <span class="comment">% create total stress part</span>
+0246         r_rep = repmat(r,1,length(c))';
+0247         c_rep = repelem(c,length(r))';
+0248         Ab_rep=Aseq;
+0249         <span class="keyword">for</span> i = 1:(length(c)*length(r))
+0250             a_array{a_index} = [r_rep(i) c_rep(i) Ab_rep(i)];
+0251             a_index = a_index+1;
+0252         <span class="keyword">end</span>
+0253         <span class="comment">% Stress limits for total stress</span>
+0254         bt(c) = stressFac*fY;
+0255         
+0256         <span class="comment">% alfa part</span>
+0257         c_alpha_S_1 = c_alpha_S_2 + 1;
+0258         c_alpha_S_2 = c_alpha_S_1 + 6;
+0259         c=c_alpha_S_1:c_alpha_S_2;
+0260         r_rep = repmat(r,1,length(c))';
+0261         c_rep = repelem(c,length(r))';
+0262         <span class="comment">% create alfa part</span>
+0263         Ab_rep=[Aaeq];
+0264         <span class="keyword">for</span> i = 1:(length(c)*length(r))
+0265             a_array{a_index} = [r_rep(i) c_rep(i) Ab_rep(i)];
+0266             a_index = a_index+1;
+0267         <span class="keyword">end</span>
+0268         
+0269         <span class="comment">% b part</span>
+0270         blc(r) = byeq;
+0271         buc(r) = byeq;
+0272         
+0273         <span class="comment">% Mohr-coulomb</span>
+0274     <span class="keyword">elseif</span> strcmp(G.type{el},<span class="string">'MC'</span>)
+0275         <span class="comment">% Subindex for semidefinate cones</span>
+0276         subi(subi_index+1:subi_index + nr_subi) = r_subi;
+0277         subi_index = subi_index + nr_subi;
+0278         
+0279         <span class="comment">% Total stress part</span>
+0280         c = c_t1:c_t2;
+0281         <span class="comment">% Create</span>
+0282         r_rep = repmat(r,1,length(c))';
+0283         c_rep = repelem(c,length(r))';
+0284         Ab_rep=[Asig];
+0285         <span class="keyword">for</span> i = 1:(length(c)*length(r))
+0286             a_array{a_index} = [r_rep(i) c_rep(i) Ab_rep(i)];
+0287             a_index = a_index+1;
+0288         <span class="keyword">end</span>
+0289         
+0290         <span class="comment">% Stress limits for total stress</span>
+0291         bt(c) = inf;
+0292         
+0293         <span class="comment">% alpha part</span>
+0294         c_alpha_MC_1 = c_alpha_MC_2 + 1;
+0295         c_alpha_MC_2 = c_alpha_MC_1 + 1;
+0296         c=c_alpha_MC_1:c_alpha_MC_2;
+0297         <span class="comment">% create alpha</span>
+0298         r_rep = repmat(r,1,length(c))';
+0299         c_rep = repelem(c,length(r))';
+0300         Ab_rep=[Aa];
+0301         <span class="keyword">for</span> i = 1:(length(c)*length(r))
+0302             a_array{a_index} = [r_rep(i) c_rep(i) Ab_rep(i)];
+0303             a_index = a_index+1;
+0304         <span class="keyword">end</span>
+0305         
+0306         <span class="comment">% b part</span>
+0307         blc(r) = [blc_e];
+0308         buc(r) = [buc_e];
+0309     <span class="comment">% Reinforced concrete 2</span>
+0310     <span class="keyword">elseif</span> strcmp(G.type{el},<span class="string">'RC2'</span>)
+0311         <span class="comment">% Subindex for semidefinate cones</span>
+0312         subi(subi_index+1:subi_index + nr_subi) = r_subi;
+0313         subi_index = subi_index + nr_subi;
+0314         
+0315         <span class="comment">% Total stress part</span>
+0316         c = c_t1:c_t2;
+0317         <span class="comment">% Create</span>
+0318         r_rep = repmat(r,1,length(c))';
+0319         c_rep = repelem(c,length(r))';
+0320         Ab_rep=[Asig];
+0321         <span class="keyword">for</span> i = 1:(length(c)*length(r))
+0322             a_array{a_index} = [r_rep(i) c_rep(i) Ab_rep(i)];
+0323             a_index = a_index+1;
+0324         <span class="keyword">end</span>
+0325         
+0326         <span class="comment">% Stress limits for total stress</span>
+0327         bt(c) = inf;
+0328         
+0329         <span class="comment">% steel part</span>
+0330         c_s1 = c_s2+1;
+0331         c_s2 = c_s1+2;
+0332         c = c_s1:c_s2;
+0333         <span class="comment">% create steel</span>
+0334         r_rep = repmat(r,1,length(c))';
+0335         c_rep = repelem(c,length(r))';
+0336         Ab_rep=[Ast];
+0337         <span class="keyword">for</span> i = 1:(length(c)*length(r))
+0338             a_array{a_index} = [r_rep(i) c_rep(i) Ab_rep(i)];
+0339             a_index = a_index+1;
+0340         <span class="keyword">end</span>
+0341         
+0342         <span class="comment">% alpha part</span>
+0343         c_alpha_MC_1 = c_alpha_MC_2 + 1;
+0344         c_alpha_MC_2 = c_alpha_MC_1 + 1;
+0345         c=c_alpha_MC_1:c_alpha_MC_2;
+0346         <span class="comment">% create alpha</span>
+0347         r_rep = repmat(r,1,length(c))';
+0348         c_rep = repelem(c,length(r))';
+0349         Ab_rep=[Aa];
+0350         <span class="keyword">for</span> i = 1:(length(c)*length(r))
+0351             a_array{a_index} = [r_rep(i) c_rep(i) Ab_rep(i)];
+0352             a_index = a_index+1;
+0353         <span class="keyword">end</span>
+0354         
+0355         <span class="comment">% b part</span>
+0356         blc(r) = [blc_e];
+0357         buc(r) = [buc_e];
+0358         
+0359         <span class="comment">% steel limits</span>
+0360         i_bs1 = i_bs2 + 1;
+0361         i_bs2 = i_bs1 + 2;
+0362         bs(i_bs1:i_bs2) = bs_e;    
+0363     <span class="keyword">end</span>
+0364 <span class="keyword">end</span>
+0365 <span class="comment">% End progressbar</span>
+0366 <a href="../../mema_fela/gen_functions/text_progress_bar.html" class="code" title="function text_progress_bar(c)">text_progress_bar</a>(sprintf(<span class="string">'done in %8.2fs'</span>,toc));
+0367 <span class="comment">% Generate sparse matrix</span>
+0368 IJV = cell2mat(a_array);
+0369 Ab = sparse(IJV(:,1),IJV(:,2),IJV(:,3));
+0370 blc = sparse(blc);
+0371 buc = sparse(buc);
+0372 bs = sparse(bs);
+0373 bt = sparse(bt);</pre></div>
+<hr><address>Generated on Fri 16-Aug-2019 14:33:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of solveopt_cmm3</title>
+  <meta name="keywords" content="solveopt_cmm3">
+  <meta name="description" content="solveopt_cmm: Created the conic constraint matrices.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- menu.html cmm3 -->
+<h1>solveopt_cmm3
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>solveopt_cmm: Created the conic constraint matrices.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [sol]=solveopt_cmm3(nel,Hsup,Rsup,Ab,blc,buc,bs,bt,subi,G,options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> solveopt_cmm: Created the conic constraint matrices.
+  FORMAT: [x, y]=solveopt_cmm(nel,Hsup,Rsup,Ab,blc,buc,C)
+
+
+ Input:
+  nel: Number of elements
+  Hsup: Global equilibrium matrix excluding supports
+  Rsup: Load vector excluding supported dofs
+  Ab: Constrint matrix
+  blc: Lower yield criteria
+  buc: Upper yield criteria
+  bs: Variable limits of steel
+  bt: Variable limits of total stresses
+  subi: subindexes for the equations of semidefinte conic constraints 
+  G: struct: material struct.
+
+
+ Optional input:
+  options: struct: Structure which contains different options to be used
+  througout the program.
+
+
+ Output:
+  sol: struct: structure containing the solution with fields:
+   xt: Total stresses in each stresspoint
+   xs: Stresses in steel (for RC shows steek part if concrete
+   xc: concrete stresses (without smeared reinforcement)
+   y : collapse mode
+   lambda: load-factor
+   and more....
+
+ Latest author:
+ 15-08-2019 Mads Emil Møller Andersen - MEMAndersen@gmail.com</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../mema_fela/fela/fela_main.html" class="code" title="function [sol, prob]= fela_main(msh_path, materials, supports, loads, varargin)">fela_main</a>	fela_main: Main runner of the FELA-program</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [sol]=solveopt_cmm3(nel,Hsup,Rsup,Ab,blc,buc,bs,bt,subi,G,options)</a>
+0002 <span class="comment">% solveopt_cmm: Created the conic constraint matrices.</span>
+0003 <span class="comment">%  FORMAT: [x, y]=solveopt_cmm(nel,Hsup,Rsup,Ab,blc,buc,C)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Input:</span>
+0007 <span class="comment">%  nel: Number of elements</span>
+0008 <span class="comment">%  Hsup: Global equilibrium matrix excluding supports</span>
+0009 <span class="comment">%  Rsup: Load vector excluding supported dofs</span>
+0010 <span class="comment">%  Ab: Constrint matrix</span>
+0011 <span class="comment">%  blc: Lower yield criteria</span>
+0012 <span class="comment">%  buc: Upper yield criteria</span>
+0013 <span class="comment">%  bs: Variable limits of steel</span>
+0014 <span class="comment">%  bt: Variable limits of total stresses</span>
+0015 <span class="comment">%  subi: subindexes for the equations of semidefinte conic constraints</span>
+0016 <span class="comment">%  G: struct: material struct.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% Optional input:</span>
+0020 <span class="comment">%  options: struct: Structure which contains different options to be used</span>
+0021 <span class="comment">%  througout the program.</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% Output:</span>
+0025 <span class="comment">%  sol: struct: structure containing the solution with fields:</span>
+0026 <span class="comment">%   xt: Total stresses in each stresspoint</span>
+0027 <span class="comment">%   xs: Stresses in steel (for RC shows steek part if concrete</span>
+0028 <span class="comment">%   xc: concrete stresses (without smeared reinforcement)</span>
+0029 <span class="comment">%   y : collapse mode</span>
+0030 <span class="comment">%   lambda: load-factor</span>
+0031 <span class="comment">%   and more....</span>
+0032 <span class="comment">%</span>
+0033 <span class="comment">% Latest author:</span>
+0034 <span class="comment">% 15-08-2019 Mads Emil Møller Andersen - MEMAndersen@gmail.com</span>
+0035 
+0036 <span class="comment">%% unpack optional parameters</span>
+0037 save_file = options.solver.save_file;
+0038 save_name = options.solver.save_name;
+0039 mosek_log = options.solver.mosek_log;
+0040 mosek_echo = options.solver.mosek_echo;
+0041 smeared_comp_factor = options.solver.smeared_comp_factor;
+0042 
+0043 <span class="comment">%% Setup problem</span>
+0044 
+0045 <span class="comment">% Count members of each material</span>
+0046 ind.RC = ismember(cellstr(G.type),<span class="string">'RC'</span>);
+0047 ind.S = ismember(cellstr(G.type),<span class="string">'S'</span>);
+0048 ind.MC = ismember(cellstr(G.type),<span class="string">'MC'</span>);
+0049 ind.RC2 = ismember(cellstr(G.type),<span class="string">'RC2'</span>);
+0050 ind.C = any([ind.RC; ind.RC2; ind.MC], 1); <span class="comment">% Combined concrete</span>
+0051 ind.RC_c = any([ind.RC; ind.RC2], 1); <span class="comment">% Combined reinforced concrete</span>
+0052 
+0053 n.RC = sum(ind.RC);
+0054 n.S = sum(ind.S);
+0055 n.MC = sum(ind.MC);
+0056 n.RC2 = sum(ind.RC2);
+0057 
+0058 
+0059 <span class="comment">% Total number of streel stres vars and aux. vars</span>
+0060 nstax = n.RC*4+n.S*7+n.MC*2+n.RC2*5;
+0061 <span class="comment">% Total number of streel stres vars and aux. vars</span>
+0062 nax = n.RC*1+n.S*7+n.MC*2+n.RC2*2;
+0063 
+0064 
+0065 <span class="comment">% Equations and inequalities</span>
+0066 O=sparse(size(Hsup,1),nstax);
+0067 
+0068 A=[Hsup -Rsup  O
+0069     Ab    ];
+0070 prob.a = sparse(A);
+0071 
+0072 <span class="comment">% Limits for the equations:</span>
+0073 O=sparse(size(Hsup,1),1);
+0074 prob.blc = [O
+0075     blc];
+0076 prob.buc = [O
+0077     buc];
+0078 
+0079 <span class="comment">% Limits for the variables:</span>
+0080 
+0081 prob.blx = [-bt, 0    -bs*smeared_comp_factor, -inf*ones(1,nax)]';
+0082 prob.bux = [bt,  inf   bs,                      inf*ones(1,nax)]';
+0083 
+0084 
+0085 <span class="comment">% Object function:</span>
+0086 prob.c = [zeros(1,6*nel) 1 zeros(1,nstax)];
+0087 
+0088 <span class="comment">% Semidefinite vars</span>
+0089 n_sd_cones = numel(subi)/6;
+0090 <span class="keyword">if</span> n_sd_cones &gt; 0
+0091     prob.bardim = ones(1,n_sd_cones)*3;
+0092     prob.bara.subi = size(Hsup,1)+subi; <span class="comment">% Indices of semidefinte constraints</span>
+0093     prob.bara.subj = reshape(ones(6,1).*(1:n_sd_cones),1,6*n_sd_cones); <span class="comment">% Semidefinite matrices</span>
+0094     prob.bara.subk = repmat([1 2 3 2 3 3],1,n_sd_cones);
+0095     prob.bara.subl = repmat([1 2 3 1 1 2],1,n_sd_cones);
+0096     prob.bara.val = repmat([1 1 1 0.5 0.5 0.5],1,n_sd_cones);
+0097 <span class="keyword">end</span>
+0098 
+0099 <span class="comment">% Cones</span>
+0100 <span class="keyword">if</span> n.S &gt; 0
+0101     [~, res] = mosekopt(<span class="string">'symbcon'</span>);
+0102     prob.cones.type = ones(1,n.S)*res.symbcon.MSK_CT_QUAD;
+0103     prob.cones.sub = (1:(7*n.S)) + nel*6+1+4*n.RC;
+0104     prob.cones.subptr = 1:7:7*n.S;
+0105 <span class="keyword">end</span>
+0106 
+0107 <span class="comment">%% Optimize</span>
+0108 
+0109 <span class="comment">% Toogle save of mosek-problem</span>
+0110 <span class="keyword">if</span> save_file
+0111     cmd = sprintf(<span class="string">'write(%s)'</span>,save_name);
+0112     mosekopt(cmd,prob)
+0113 <span class="keyword">end</span>
+0114 
+0115 <span class="comment">% Get parameters for the solver from options</span>
+0116 param = options.param;
+0117 
+0118 <span class="comment">% Run optimization</span>
+0119 <span class="keyword">if</span> mosek_log
+0120     cmd = sprintf(<span class="string">'maximize log(%s_MosekLog.txt) echo(%d)'</span>,<span class="keyword">...</span>
+0121         datestr(now,<span class="string">'yyyy-mm-dd-HH-MM-SS'</span>),mosek_echo);
+0122 <span class="keyword">else</span>
+0123     cmd = sprintf(<span class="string">'maximize echo(%d)'</span>, mosek_echo);
+0124 <span class="keyword">end</span>
+0125 
+0126 [r, res]= mosekopt(cmd, prob, param);
+0127 
+0128 <span class="comment">%% Extract solution</span>
+0129 
+0130 gA = G.A(:,any([ind.RC; ind.RC2], 1));
+0131 
+0132 <span class="comment">% Indices for materials</span>
+0133 AllIndex = reshape(1:6*nel,6,nel);
+0134 <span class="comment">% Concrete and mohr coulomb index</span>
+0135 xC_Index = AllIndex(:,ind.C);
+0136 <span class="comment">% Von-mise (Steel)</span>
+0137 xS_Index = AllIndex(:,ind.S);
+0138 <span class="comment">% Smeared steel stress index</span>
+0139 allS_index = repmat(1:3,nel,1)'+repmat(0:6:nel*6-6,3,1);
+0140 S_index = allS_index(:,ind.RC_c);
+0141 
+0142 
+0143 sol.xt = res.sol.itr.xx(1:(6*nel));
+0144 sol.xs = zeros(nel*6,1);
+0145 sol.xs(S_index(:)) = res.sol.itr.xx((6*nel+2):(end-(n.RC+7*n.S+2*n.MC+2*n.RC2)));
+0146 sol.xc = sol.xt; sol.xc(xS_Index) = 0;
+0147 sol.xc(S_index(:)) = sol.xc(S_index(:))-sol.xs(S_index(:)).*gA(:);
+0148 sol.y = res.sol.itr.y(1:size(Hsup,1));
+0149 sol.lambda = res.sol.itr.xx((6*nel+1));
+0150 sol.rmsh = res.rmsg;
+0151 sol.rcodestr = res.rcodestr;
+0152 sol.prosta = res.sol.itr.prosta;
+0153 sol.solsta = res.sol.itr.solsta;</pre></div>
+<hr><address>Generated on Fri 16-Aug-2019 14:33:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

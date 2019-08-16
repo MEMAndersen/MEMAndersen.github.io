@@ -1,0 +1,263 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of vtkwrite_tet</title>
+  <meta name="keywords" content="vtkwrite_tet">
+  <meta name="description" content="vtkwrite_tet: Writes a .VTK file to visualize results in paraview.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- menu.html io -->
+<h1>vtkwrite_tet
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>vtkwrite_tet: Writes a .VTK file to visualize results in paraview.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function vtkwrite_tet(path, prob, sol) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> vtkwrite_tet: Writes a .VTK file to visualize results in paraview.
+  FORMAT: vtkwrite_tet(path, prob, sol)
+
+
+ Input:
+  path: string: Path to write file
+
+  prob: struct: Struct containing the problem, see fela_main for what it
+   consists of.
+
+  sol: struct: Struct containing the solution, see fela_main for what it
+   consists of.
+
+ 16-02-2018 Mads Emil Møller Andersen &amp; Nikolaj Skafte Koch
+ Code modified from Chaoyuan Yeh, William Thielicke and David Gingras's
+
+ Latest author:
+ 30-07-2019 Mads Emil Møller Andersen - MEMAndersen@gmail.com</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../mema_fela/fela/fela_post.html" class="code" title="function fela_post(sol, prob, varargin)">fela_post</a>	fela_post: Post processing of solution, matlat plots or vtk files are</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function vtkwrite_tet(path, prob, sol)</a>
+0002 <span class="comment">% vtkwrite_tet: Writes a .VTK file to visualize results in paraview.</span>
+0003 <span class="comment">%  FORMAT: vtkwrite_tet(path, prob, sol)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Input:</span>
+0007 <span class="comment">%  path: string: Path to write file</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%  prob: struct: Struct containing the problem, see fela_main for what it</span>
+0010 <span class="comment">%   consists of.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%  sol: struct: Struct containing the solution, see fela_main for what it</span>
+0013 <span class="comment">%   consists of.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% 16-02-2018 Mads Emil Møller Andersen &amp; Nikolaj Skafte Koch</span>
+0016 <span class="comment">% Code modified from Chaoyuan Yeh, William Thielicke and David Gingras's</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Latest author:</span>
+0019 <span class="comment">% 30-07-2019 Mads Emil Møller Andersen - MEMAndersen@gmail.com</span>
+0020 
+0021 <span class="comment">% Determine materials</span>
+0022 <span class="comment">% Count members of each material</span>
+0023 ind.RC = ismember(cellstr(prob.G.type),<span class="string">'RC'</span>);
+0024 ind.S = ismember(cellstr(prob.G.type),<span class="string">'S'</span>);
+0025 n.RC = sum(ind.RC);
+0026 n.S = sum(ind.S);
+0027 
+0028 <span class="comment">% Create file and open in write mode</span>
+0029 fid = fopen(path, <span class="string">'w'</span>);
+0030 
+0031 <span class="comment">% VTK files contain five major parts</span>
+0032 <span class="comment">% 1. VTK DataFile Version</span>
+0033 fprintf(fid, <span class="string">'# vtk DataFile Version 4.2\r\n'</span>);
+0034 <span class="comment">% 2. Title</span>
+0035 fprintf(fid, <span class="string">'VTK data file from mema_fela program\r\n'</span>);
+0036 
+0037 <span class="comment">% 3. The format data proper is saved in (ASCII or Binary). Use</span>
+0038 <span class="comment">% fprintf to write data in the case of ASCII and fwrite for binary.</span>
+0039 fprintf(fid, <span class="string">'ASCII\r\n'</span>);
+0040 
+0041 x = prob.X(:,1);
+0042 y = prob.X(:,2);
+0043 z = prob.X(:,3);
+0044 <span class="keyword">if</span> sum(size(x)==size(y) &amp; size(y)==size(z))~=length(size(x))
+0045     error(<span class="string">'Input dimesions do not match'</span>)
+0046 <span class="keyword">end</span>
+0047 <span class="comment">% 4. Type of Dataset UNSTRUCTURED_GRID</span>
+0048 <span class="comment">% This part, dataset structure, begins with a line containing the</span>
+0049 <span class="comment">% keyword 'DATASET' followed by a keyword describing the type of dataset.</span>
+0050 <span class="comment">% Then the geomettry part describes geometry and topology of the dataset.</span>
+0051 
+0052 fprintf(fid, <span class="string">'DATASET UNSTRUCTURED_GRID\r\n'</span>);
+0053 
+0054 <span class="comment">% 5.This final part describe the dataset attributes and begins with the</span>
+0055 <span class="comment">% keywords 'POINT_DATA' or 'CELL_DATA', followed by an integer number</span>
+0056 <span class="comment">% specifying the number of points of cells. Other keyword/data combination</span>
+0057 <span class="comment">% then define the actual dataset attribute values.</span>
+0058 
+0059 <span class="comment">% Precision of saved floats</span>
+0060 precision = <span class="string">'4'</span>;
+0061 
+0062 n_nodes = numel(x);
+0063 n_elements = size(prob.T,1);
+0064 size_elements = numel(prob.T)+n_elements;
+0065 <span class="comment">% WRITE POINTS/NODES</span>
+0066 fprintf(fid, [<span class="string">'POINTS '</span> num2str(n_nodes) <span class="string">' float\r\n'</span>]);
+0067 spec = [repmat([<span class="string">'%0.'</span>, precision, <span class="string">'f '</span>], 1, 3), <span class="string">'\r\n'</span>];
+0068 fprintf(fid, spec, prob.X');
+0069 
+0070 <span class="comment">% WRITE CELLS</span>
+0071 fprintf(fid, [<span class="string">'\r\nCELLS '</span> num2str(n_elements) <span class="string">' '</span> num2str(size_elements) <span class="string">'\r\n'</span>]);
+0072 fprintf(fid,<span class="string">'4 %d %d %d %d\r\n'</span>,prob.T'-1); <span class="comment">%-1 because arrays start at 0 in vtk</span>
+0073 
+0074 <span class="comment">% WRITE CELL TYPES (tetrahedron = 10)</span>
+0075 fprintf(fid, [<span class="string">'\r\nCELL_TYPES '</span> num2str(n_elements) <span class="string">'\r\n'</span>]);
+0076 fprintf(fid,<span class="string">'%d\r\n'</span>,10*ones(1,n_elements));
+0077 
+0078 <span class="comment">% WRITE FIELD DATA</span>
+0079 <span class="comment">% CELL VALUES</span>
+0080 fprintf(fid, [<span class="string">'\r\nCELL_DATA '</span> num2str(n_elements) <span class="string">'\r\n'</span>]);
+0081 
+0082 <span class="comment">% cell number</span>
+0083 fprintf(fid, [<span class="string">'SCALARS el float 1\r\n'</span>]);
+0084 fprintf(fid,<span class="string">'LOOKUP_TABLE default\r\n'</span>);
+0085 fprintf(fid,<span class="string">'%d\r\n'</span>,1:n_elements);
+0086 fprintf(fid,<span class="string">'\r\n'</span>);
+0087 
+0088 <span class="comment">% Material types</span>
+0089 mat = ones(1,n_elements);
+0090 mat(1,ind.S) = mat(1,ind.S) + 1;
+0091 fprintf(fid, [<span class="string">'SCALARS typ float 1\r\n'</span>]);
+0092 fprintf(fid,<span class="string">'LOOKUP_TABLE default\r\n'</span>);
+0093 fprintf(fid,<span class="string">'%d\r\n'</span>,mat);
+0094 fprintf(fid,<span class="string">'\r\n'</span>);
+0095 
+0096 <span class="comment">% Stresses</span>
+0097 spec = [repmat([<span class="string">'%0.'</span>, precision, <span class="string">'f '</span>], 1, 3), <span class="string">'\r\n'</span>];
+0098 xc = sol.xc;
+0099 fprintf(fid, [<span class="string">'TENSORS xc float \r\n'</span>]);
+0100 <span class="keyword">for</span> el = 1:n_elements
+0101     sigvec = xc(1+(el-1)*6:6+(el-1)*6);
+0102     sig = [sigvec(1) sigvec(4) sigvec(5)
+0103         sigvec(4) sigvec(2) sigvec(6)
+0104         sigvec(5) sigvec(6) sigvec(3)];
+0105     fprintf(fid,spec,sig);
+0106     fprintf(fid,<span class="string">'\r\n'</span>);
+0107 <span class="keyword">end</span>
+0108 
+0109 fprintf(fid, [<span class="string">'TENSORS xt float \r\n'</span>]);
+0110 xt = sol.xt;
+0111 <span class="keyword">for</span> el = 1:n_elements
+0112     sigvec = xt(1+(el-1)*6:6+(el-1)*6);
+0113     sig = [sigvec(1) sigvec(4) sigvec(5)
+0114         sigvec(4) sigvec(2) sigvec(6)
+0115         sigvec(5) sigvec(6) sigvec(3)];
+0116     fprintf(fid,spec,sig);
+0117     fprintf(fid,<span class="string">'\r\n'</span>);
+0118 <span class="keyword">end</span>
+0119 
+0120 fprintf(fid, [<span class="string">'TENSORS xs float \r\n'</span>]);
+0121 xs = sol.xs;
+0122 <span class="keyword">for</span> el = 1:n_elements
+0123     sigvec = xs(1+(el-1)*6:6+(el-1)*6);
+0124     sig = [sigvec(1) sigvec(4) sigvec(5)
+0125         sigvec(4) sigvec(2) sigvec(6)
+0126         sigvec(5) sigvec(6) sigvec(3)];
+0127     fprintf(fid,spec,sig);
+0128     fprintf(fid,<span class="string">'\r\n'</span>);
+0129 <span class="keyword">end</span>
+0130 
+0131 <span class="comment">% principal stress normals</span>
+0132 sigma1 = zeros(n_elements,1);
+0133 sigma2 = zeros(n_elements,1);
+0134 sigma3 = zeros(n_elements,1);
+0135 n1 = zeros(n_elements,3);
+0136 n2 = zeros(n_elements,3);
+0137 n3 = zeros(n_elements,3);
+0138 
+0139 <span class="keyword">for</span> el = 1:n_elements
+0140     sigvec = xt(1+(el-1)*6:6+(el-1)*6);
+0141     sig = [sigvec(1) sigvec(4) sigvec(5)
+0142         sigvec(4) sigvec(2) sigvec(6)
+0143         sigvec(5) sigvec(6) sigvec(3)];
+0144     
+0145     [vec,val] = eig(sig);
+0146     [omega,ind] = sort(diag(val));
+0147     sigma3(el) = omega(1);
+0148     sigma2(el) = omega(2);
+0149     sigma1(el) = omega(3);
+0150     n3(el,:) = vec(:,ind(1));
+0151     n2(el,:) = vec(:,ind(2));
+0152     n1(el,:) = vec(:,ind(3));
+0153 <span class="keyword">end</span>
+0154 
+0155 fprintf(fid, [<span class="string">'VECTORS n1 float\r\n'</span>]);
+0156 fprintf(fid,spec,n1');
+0157 fprintf(fid,<span class="string">'\r\n'</span>);
+0158 fprintf(fid, [<span class="string">'VECTORS n2 float \r\n'</span>]);
+0159 fprintf(fid,spec,n2');
+0160 fprintf(fid,<span class="string">'\r\n'</span>);
+0161 fprintf(fid, [<span class="string">'VECTORS n3 float \r\n'</span>]);
+0162 fprintf(fid,spec,n3');
+0163 fprintf(fid,<span class="string">'\r\n'</span>);
+0164 
+0165 fprintf(fid, [<span class="string">'SCALARS sigma1 float 1\r\n'</span>]);
+0166 spec = [repmat([<span class="string">'%0.'</span>, precision, <span class="string">'f '</span>], 1, 1), <span class="string">'\r\n'</span>];
+0167 fprintf(fid,<span class="string">'LOOKUP_TABLE default\r\n'</span>);
+0168 fprintf(fid,spec,sigma1);
+0169 fprintf(fid,<span class="string">'\r\n'</span>);
+0170 fprintf(fid, [<span class="string">'SCALARS sigma2 float 1\r\n'</span>]);
+0171 fprintf(fid,<span class="string">'LOOKUP_TABLE default\r\n'</span>);
+0172 fprintf(fid,spec,sigma2);
+0173 fprintf(fid,<span class="string">'\r\n'</span>);
+0174 fprintf(fid, [<span class="string">'SCALARS sigma3 float 1\r\n'</span>]);
+0175 fprintf(fid,<span class="string">'LOOKUP_TABLE default\r\n'</span>);
+0176 fprintf(fid,spec,sigma3);
+0177 fprintf(fid,<span class="string">'\r\n'</span>);
+0178 
+0179 <span class="comment">%Collapse mode</span>
+0180 fprintf(fid, [<span class="string">'POINT_DATA '</span> num2str(n_nodes) <span class="string">'\r\n'</span>]);
+0181 
+0182 <span class="comment">% node numbers</span>
+0183 fprintf(fid, [<span class="string">'SCALARS no float 1\r\n'</span>]);
+0184 fprintf(fid,<span class="string">'LOOKUP_TABLE default\r\n'</span>);
+0185 fprintf(fid,<span class="string">'%d\r\n'</span>,1:n_nodes);
+0186 fprintf(fid,<span class="string">'\r\n'</span>);
+0187 
+0188 <span class="comment">% collapse mode</span>
+0189 spec = [repmat([<span class="string">'%0.'</span>, precision, <span class="string">'f '</span>], 1, 3), <span class="string">'\r\n'</span>];
+0190 alldof = 1:n_nodes*3;
+0191 freedof = setdiff(alldof,prob.supeq);
+0192 y = zeros(n_nodes*3,1);
+0193 y(freedof) = sol.y;
+0194 y = y./max(abs(y)); <span class="comment">%Scale to 1</span>
+0195 fprintf(fid, [<span class="string">'VECTORS u float \r\n'</span>]);
+0196 fprintf(fid,spec,y);
+0197 
+0198 <span class="comment">% File write complete</span>
+0199 fclose(fid);
+0200 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 16-Aug-2019 14:33:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

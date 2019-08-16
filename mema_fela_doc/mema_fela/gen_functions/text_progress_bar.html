@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of text_progress_bar</title>
+  <meta name="keywords" content="text_progress_bar">
+  <meta name="description" content="This function creates a text progress bar. It should be called with a">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- menu.html gen_functions -->
+<h1>text_progress_bar
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This function creates a text progress bar. It should be called with a</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function text_progress_bar(c) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> This function creates a text progress bar. It should be called with a
+ STRING argument to initialize and terminate. Otherwise the number correspoding
+ to progress in % should be supplied.
+ INPUTS:   C   Either: Text string to initialize or terminate
+                       Percentage number to show progress
+ OUTPUTS:  N/A
+ Author: Paul Proteus (e-mail: proteus.paul (at) yahoo (dot) com)
+ Version: 1.0
+ Changes tracker:  29.06.2010  - First version
+
+ Modified by Mads Emil Møller Andersen 13-06-2019</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../mema_fela/cmm3/setcon_cmm3.html" class="code" title="function [Ab,blc,buc,bs,bt,subi] = setcon_cmm3(nel,G,options)">setcon_cmm3</a>	setcon_cmm3: Assembels the contraint matrix</li><li><a href="../../mema_fela/cmm3/seth_cmm3.html" class="code" title="function H=seth_cmm3(X,T,nel,neq,nvar,eqperel,varperel)">seth_cmm3</a>	seth_cmm: Assembles the global equilibrium matrix</li><li><a href="../../mema_fela/cmm3/setvareq_cmm3.html" class="code" title="function [nno,nel,nvar,neq,varperel,eqperel,legno]=setvareq_cmm3(X,T)">setvareq_cmm3</a>	setvareq_cmm: Sets variable equations and determines varous geometric</li><li><a href="../../mema_fela/fela/fela_init.html" class="code" title="function fela_init(msk_path, varargin)">fela_init</a>	fela_init: Initialize mosek and set various settings related to logging</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function text_progress_bar(c)</a>
+0002 <span class="comment">% This function creates a text progress bar. It should be called with a</span>
+0003 <span class="comment">% STRING argument to initialize and terminate. Otherwise the number correspoding</span>
+0004 <span class="comment">% to progress in % should be supplied.</span>
+0005 <span class="comment">% INPUTS:   C   Either: Text string to initialize or terminate</span>
+0006 <span class="comment">%                       Percentage number to show progress</span>
+0007 <span class="comment">% OUTPUTS:  N/A</span>
+0008 <span class="comment">% Author: Paul Proteus (e-mail: proteus.paul (at) yahoo (dot) com)</span>
+0009 <span class="comment">% Version: 1.0</span>
+0010 <span class="comment">% Changes tracker:  29.06.2010  - First version</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Modified by Mads Emil Møller Andersen 13-06-2019</span>
+0013 
+0014 <span class="comment">% Inspired by: http://blogs.mathworks.com/loren/2007/08/01/monitoring-progress-of-a-calculation/</span>
+0015 
+0016 <span class="comment">%% Initialization</span>
+0017 <span class="keyword">persistent</span> strCR;           <span class="comment">%   Carriage return pesistent variable</span>
+0018 <span class="keyword">persistent</span> cw_logging;           <span class="comment">%   if toogle is false no output is shown</span>
+0019 
+0020 <span class="comment">% Vizualization parameters</span>
+0021 strPercentageLength = 10;   <span class="comment">%   Length of percentage string (must be &gt;5)</span>
+0022 strDotsMaximum      = 10;   <span class="comment">%   The total number of dots in a progress bar</span>
+0023 
+0024 <span class="comment">% control logging to command window</span>
+0025 <span class="keyword">if</span> isempty(cw_logging) || strcmp(c, <span class="string">'cw_logging_on'</span>)
+0026     cw_logging = true;
+0027     <span class="keyword">return</span>
+0028 <span class="keyword">elseif</span> strcmp(c, <span class="string">'cw_logging_off'</span>)
+0029     cw_logging = false;
+0030     <span class="keyword">return</span>
+0031 <span class="keyword">elseif</span> strcmp(c, <span class="string">'cw_logging'</span>)
+0032     cw_logging = ~cw_logging;
+0033     <span class="keyword">return</span>
+0034 <span class="keyword">end</span>
+0035 
+0036 <span class="comment">%% Main</span>
+0037 
+0038 <span class="keyword">if</span> cw_logging
+0039     <span class="keyword">if</span> isempty(strCR) &amp;&amp; ~ischar(c)
+0040         <span class="comment">% Progress bar must be initialized with a string</span>
+0041         error(<span class="string">'The text progress must be initialized with a string'</span>);
+0042     <span class="keyword">elseif</span> isempty(strCR) &amp;&amp; ischar(c)
+0043         <span class="comment">% Progress bar - initialization</span>
+0044         fprintf(<span class="string">'%s'</span>,c);
+0045         strCR = -1;
+0046     <span class="keyword">elseif</span> ~isempty(strCR) &amp;&amp; ischar(c)
+0047         <span class="comment">% Progress bar  - termination</span>
+0048         strCR = [];
+0049         fprintf([c <span class="string">'\n'</span>]);
+0050     <span class="keyword">elseif</span> isnumeric(c)
+0051         <span class="comment">% Progress bar - normal progress</span>
+0052         c = floor(c);
+0053         percentageOut = [num2str(c) <span class="string">'%%'</span>];
+0054         percentageOut = [percentageOut repmat(<span class="string">' '</span>,1,strPercentageLength-length(percentageOut)-1)];
+0055         nDots = floor(c/100*strDotsMaximum);
+0056         dotOut = [<span class="string">'['</span> repmat(<span class="string">'.'</span>,1,nDots) repmat(<span class="string">' '</span>,1,strDotsMaximum-nDots) <span class="string">']'</span>];
+0057         strOut = [percentageOut dotOut];
+0058         
+0059         <span class="comment">% Print it on the screen</span>
+0060         <span class="keyword">if</span> strCR == -1
+0061             <span class="comment">% Don't do carriage return during first run</span>
+0062             fprintf(strOut);
+0063         <span class="keyword">else</span>
+0064             <span class="comment">% Do it during all the other runs</span>
+0065             fprintf([strCR strOut]);
+0066         <span class="keyword">end</span>
+0067         
+0068         <span class="comment">% Update carriage return</span>
+0069         strCR = repmat(<span class="string">'\b'</span>,1,length(strOut)-1);
+0070         
+0071     <span class="keyword">else</span>
+0072         <span class="comment">% Any other unexpected input</span>
+0073         error(<span class="string">'Unsupported argument type'</span>);
+0074     <span class="keyword">end</span>
+0075     
+0076 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 16-Aug-2019 14:33:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

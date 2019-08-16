@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Ab_MMC_ps3</title>
+  <meta name="keywords" content="Ab_MMC_ps3">
+  <meta name="description" content="Ab_MMC_ps3: Modified Mohr-Coulomb material point on 3D. Uses two">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # mema_fela --><!-- menu.html material -->
+<h1>Ab_MMC_ps3
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Ab_MMC_ps3: Modified Mohr-Coulomb material point on 3D. Uses two</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [A, blc, buc] = Ab_MMC_ps3(k, fc, ft) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Ab_MMC_ps3: Modified Mohr-Coulomb material point on 3D. Uses two
+ semidefinte cones and to extra linear conditions.
+  FORMAT: [A, blc, buc] = Ab_MMC_ps3(k, fc, ft)
+
+
+ Input:
+  k: Angle of friction
+  fc: Concrete compressive strength
+  ft: Tensile cutoff
+
+
+ Output:
+  [A] = The constaint matrix
+  {blc} = lower limit of linear constraints
+  {buc} = upper limit of linear constraints
+
+ EQUATION
+ {blc} &lt;= [A] {x} &lt;= {buc}
+ {x}={st_xx st_yy st_zz st_xy st_xz st_yz alfa0 alfa1}
+
+ Latest author:
+ 15-08-2019 Mads Emil Møller Andersen - MEMAndersen@gmail.com</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../mema_fela/cmm3/setcon_cmm3.html" class="code" title="function [Ab,blc,buc,bs,bt,subi] = setcon_cmm3(nel,G,options)">setcon_cmm3</a>	setcon_cmm3: Assembels the contraint matrix</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [A, blc, buc] = Ab_MMC_ps3(k, fc, ft)</a>
+0002 <span class="comment">% Ab_MMC_ps3: Modified Mohr-Coulomb material point on 3D. Uses two</span>
+0003 <span class="comment">% semidefinte cones and to extra linear conditions.</span>
+0004 <span class="comment">%  FORMAT: [A, blc, buc] = Ab_MMC_ps3(k, fc, ft)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Input:</span>
+0008 <span class="comment">%  k: Angle of friction</span>
+0009 <span class="comment">%  fc: Concrete compressive strength</span>
+0010 <span class="comment">%  ft: Tensile cutoff</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Output:</span>
+0014 <span class="comment">%  [A] = The constaint matrix</span>
+0015 <span class="comment">%  {blc} = lower limit of linear constraints</span>
+0016 <span class="comment">%  {buc} = upper limit of linear constraints</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% EQUATION</span>
+0019 <span class="comment">% {blc} &lt;= [A] {x} &lt;= {buc}</span>
+0020 <span class="comment">% {x}={st_xx st_yy st_zz st_xy st_xz st_yz alfa0 alfa1}</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% Latest author:</span>
+0023 <span class="comment">% 15-08-2019 Mads Emil Møller Andersen - MEMAndersen@gmail.com</span>
+0024 
+0025 <span class="comment">% Helper variables</span>
+0026 I = eye(3);
+0027 lower = [1 5 9 2 3 6]';
+0028 
+0029 <span class="comment">% LMI-constraints:</span>
+0030 <span class="comment">% F1 &gt;= 0, F1_ij - sigma_ij - k*alpha1 * d_ij = 0</span>
+0031 <span class="comment">% F2 &gt;= 0, F2_ij + sigma_ij + alpha2 * d_ij = 0</span>
+0032 <span class="comment">% Linear-constraints:</span>
+0033 <span class="comment">% alpha2 &lt;= ft</span>
+0034 <span class="comment">% alpha1 + alpha2 &lt;= fc/k</span>
+0035 A = sparse([-eye(6)       -k*I(lower)  zeros(6,1)
+0036              eye(6)        zeros(6,1) -I(lower)
+0037              zeros(1,6)    0           1
+0038              zeros(1,6)    1           1]);
+0039 
+0040 
+0041 <span class="comment">% Limits for the linear constraints:</span>
+0042 blc = [zeros(6,1);
+0043        zeros(6,1)
+0044        -inf;
+0045        -inf];
+0046 buc = [zeros(6,1);
+0047        zeros(6,1);
+0048        ft;
+0049        fc/k];</pre></div>
+<hr><address>Generated on Fri 16-Aug-2019 14:33:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
